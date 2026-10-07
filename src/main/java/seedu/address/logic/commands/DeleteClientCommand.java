@@ -16,7 +16,7 @@ import seedu.address.model.person.Phone;
 /**
  * Deletes a person identified using its displayed index or phone number from the address book.
  */
-public class DeleteCommand extends Command {
+public class DeleteClientCommand extends Command {
 
     public static final String COMMAND_WORD = "delete-client";
 
@@ -31,12 +31,12 @@ public class DeleteCommand extends Command {
     private final Index targetIndex;
     private final Phone phoneNumber;
 
-    public DeleteCommand(Index targetIndex) {
+    public DeleteClientCommand(Index targetIndex) {
         this.targetIndex = requireNonNull(targetIndex);
         this.phoneNumber = null;
     }
 
-    public DeleteCommand(Phone phoneNumber) {
+    public DeleteClientCommand(Phone phoneNumber) {
         this.phoneNumber = requireNonNull(phoneNumber);
         this.targetIndex = null;
     }
@@ -73,12 +73,12 @@ public class DeleteCommand extends Command {
         }
 
         // instanceof handles nulls
-        if (!(other instanceof DeleteCommand otherDeleteCommand)) {
+        if (!(other instanceof DeleteClientCommand otherDeleteClientCommand)) {
             return false;
         }
 
-        return Objects.equals(targetIndex, otherDeleteCommand.targetIndex)
-                && Objects.equals(phoneNumber, otherDeleteCommand.phoneNumber);
+        return Objects.equals(targetIndex, otherDeleteClientCommand.targetIndex)
+                && Objects.equals(phoneNumber, otherDeleteClientCommand.phoneNumber);
     }
 
     @Override

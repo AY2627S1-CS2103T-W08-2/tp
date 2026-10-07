@@ -13,16 +13,9 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.logic.commands.AddCommand;
-import seedu.address.logic.commands.ClearCommand;
-import seedu.address.logic.commands.DeleteCommand;
-import seedu.address.logic.commands.DeletePetCommand;
-import seedu.address.logic.commands.EditCommand;
+import seedu.address.logic.commands.*;
+import seedu.address.logic.commands.DeleteClientCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.logic.commands.ExitCommand;
-import seedu.address.logic.commands.FindCommand;
-import seedu.address.logic.commands.HelpCommand;
-import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
@@ -51,9 +44,9 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_delete() throws Exception {
-        DeleteCommand command = (DeleteCommand) parser.parseCommand(
-                DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
-        assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), command);
+        DeleteClientCommand command = (DeleteClientCommand) parser.parseCommand(
+                DeleteClientCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
+        assertEquals(new DeleteClientCommand(INDEX_FIRST_PERSON), command);
     }
 
     @Test
@@ -65,32 +58,32 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_deleteByPhoneIdentifier() throws Exception {
-        DeleteCommand command = (DeleteCommand) parser.parseCommand(
-                DeleteCommand.COMMAND_WORD + " i/" + ALICE.getPhone().value);
+        DeleteClientCommand command = (DeleteClientCommand) parser.parseCommand(
+                DeleteClientCommand.COMMAND_WORD + " i/" + ALICE.getPhone().value);
 
-        assertEquals(new DeleteCommand(ALICE.getPhone()), command);
+        assertEquals(new DeleteClientCommand(ALICE.getPhone()), command);
     }
 
     @Test
     public void parseCommand_deleteWithIndexAndPhoneIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD
                         + " " + INDEX_FIRST_PERSON.getOneBased() + " i/" + ALICE.getPhone().value));
     }
 
     @Test
     public void parseCommand_deleteWithoutIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD));
     }
 
     @Test
     public void parseCommand_deleteWithInvalidPhoneIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD + " i/12"));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD + " i/12"));
     }
 
     @Test

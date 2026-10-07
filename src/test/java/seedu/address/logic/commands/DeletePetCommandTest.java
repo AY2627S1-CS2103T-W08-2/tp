@@ -120,7 +120,7 @@ public class DeletePetCommandTest {
         assertFalse(deleteMiloForAlice.equals(deleteMiloForBob));
         assertFalse(deleteMiloForAlice.equals(null));
         assertFalse(deleteMiloForAlice.equals(
-                new DeleteCommand(seedu.address.commons.core.index.Index.fromOneBased(1))));
+                new DeleteClientCommand(seedu.address.commons.core.index.Index.fromOneBased(1))));
     }
 
     @Test
