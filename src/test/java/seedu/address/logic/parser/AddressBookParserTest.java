@@ -13,9 +13,16 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.logic.commands.*;
+import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteClientCommand;
+import seedu.address.logic.commands.DeletePetCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.ExitCommand;
+import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
@@ -67,23 +74,23 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_deleteWithIndexAndPhoneIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE), ()
+                        -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD
                         + " " + INDEX_FIRST_PERSON.getOneBased() + " i/" + ALICE.getPhone().value));
     }
 
     @Test
     public void parseCommand_deleteWithoutIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE), ()
+                        -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD));
     }
 
     @Test
     public void parseCommand_deleteWithInvalidPhoneIdentifier_throwsParseException() {
         assertThrows(ParseException.class,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE),
-                () -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD + " i/12"));
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteClientCommand.MESSAGE_USAGE), ()
+                        -> parser.parseCommand(DeleteClientCommand.COMMAND_WORD + " i/12"));
     }
 
     @Test

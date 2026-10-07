@@ -31,11 +31,21 @@ public class DeleteClientCommand extends Command {
     private final Index targetIndex;
     private final Phone phoneNumber;
 
+    /**
+     * Creates a {@code DeleteClientCommand} to delete the person at the given displayed index.
+     *
+     * @param targetIndex index of the person to delete
+     */
     public DeleteClientCommand(Index targetIndex) {
         this.targetIndex = requireNonNull(targetIndex);
         this.phoneNumber = null;
     }
 
+    /**
+     * Creates a {@code DeleteClientCommand} to delete the person with the given phone number.
+     *
+     * @param phoneNumber phone number of the person to delete
+     */
     public DeleteClientCommand(Phone phoneNumber) {
         this.phoneNumber = requireNonNull(phoneNumber);
         this.targetIndex = null;
