@@ -6,6 +6,7 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
+import static seedu.address.testutil.TypicalPersons.ALICE;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +51,36 @@ public class AddressBookParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_deleteByPhoneIdentifier() throws Exception {
+        DeleteCommand command = (DeleteCommand) parser.parseCommand(
+                DeleteCommand.COMMAND_WORD + " i/" + ALICE.getPhone().value);
+
+        assertEquals(new DeleteCommand(ALICE.getPhone()), command);
+    }
+
+    @Test
+    public void parseCommand_deleteWithIndexAndPhoneIdentifier_throwsParseException() {
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD
+                        + " " + INDEX_FIRST_PERSON.getOneBased() + " i/" + ALICE.getPhone().value));
+    }
+
+    @Test
+    public void parseCommand_deleteWithoutIdentifier_throwsParseException() {
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD));
+    }
+
+    @Test
+    public void parseCommand_deleteWithInvalidPhoneIdentifier_throwsParseException() {
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE),
+                () -> parser.parseCommand(DeleteCommand.COMMAND_WORD + " i/12"));
     }
 
     @Test
