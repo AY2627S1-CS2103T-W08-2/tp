@@ -51,7 +51,7 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
+The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete-client 1`.
 
 <img src="images/ArchitectureSequenceDiagram.png" width="574" />
 
@@ -91,9 +91,9 @@ Here's a (partial) class diagram of the `Logic` component:
 
 <img src="images/LogicClassDiagram.png" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
+The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete-client 1")` API call as an example.
 
-![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
+![Interactions Inside the Logic Component for the `delete-client 1` Command](images/DeleteSequenceDiagram.png)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
@@ -113,6 +113,13 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+
+The `delete-client` command accepts exactly one identifier:
+
+* A positive integer index, which refers to the currently displayed person list.
+* A phone identifier using the `i/PHONE_NUMBER` prefix, which searches the full address book.
+
+The command rejects inputs that provide both identifiers or neither identifier.
 
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
@@ -201,7 +208,7 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete-client 5` command to delete the 5th person in the address book. The `delete-client` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete-client 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
@@ -262,7 +269,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g. for `delete-client`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command is correct.
 
 _{more aspects and alternatives to be added}_
@@ -623,34 +630,58 @@ testers are expected to do more *exploratory* testing.
 
    1. Download the JAR file and copy it into an empty folder.
 
-   1. Double-click the JAR file.<br>
+   2. Double-click the JAR file.<br>
       Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
 
-1. Saving window preferences
+2. Saving window preferences
 
    1. Resize the window to an optimal size. Move the window to a different location. Close the window.
 
-   1. Relaunch the app by double-clicking the JAR file.<br>
+   2. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases …​ }_
+3. _{ more test cases …​ }_
 
 ### Deleting a person
 
-1. Deleting a person while all persons are being shown
+1. Deleting by displayed index
 
    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
 
-   1. Test case: `delete 1`<br>
-      Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
+   2. Test case: `delete-client 1`<br>
+      Expected: The first person is deleted from the list. The status message shows the deleted person's details.
 
-   1. Test case: `delete 0`<br>
+   3. Test case: `delete-client 0`<br>
       Expected: No person is deleted. The status message shows error details.
 
-   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
+   4. Test case: `delete-client 999`<br>
+      Expected: No person is deleted. The status message shows error details.
+
+2. Deleting by phone number
+
+   1. Prerequisites: A person with phone number `91234567` exists.
+
+   2. Test case: `delete-client i/91234567`<br>
+      Expected: The matching person is deleted. The status message shows the deleted person's details.
+
+   3. Test case: `delete-client i/00000000`<br>
+      Expected: No person is deleted because no matching person exists.
+
+   4. Test case: `delete-client i/12`<br>
+      Expected: No person is deleted because the phone number is invalid.
+
+3. Invalid identifier combinations
+
+   1. Test case: `delete-client`<br>
+      Expected: The command is rejected because no identifier was provided.
+
+   2. Test case: `delete-client 1 i/91234567`<br>
+      Expected: The command is rejected because both identifiers were provided.
+
+   3. Other incorrect delete commands to try: `delete-client x`, `delete-client i/abc`<br>
       Expected: Similar to previous.
 
-1. _{ more test cases …​ }_
+4. _{ more test cases …​ }_
 
 ### Saving data
 
@@ -658,4 +689,4 @@ testers are expected to do more *exploratory* testing.
 
    1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
 
-1. _{ more test cases …​ }_
+2. _{ more test cases …​ }_
