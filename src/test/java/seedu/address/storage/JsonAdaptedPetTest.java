@@ -39,6 +39,27 @@ public class JsonAdaptedPetTest {
     }
 
     @Test
+    public void toModelType_breedAndOwnerPhone_preserved() throws Exception {
+        String breed = "Golden retriever";
+        JsonAdaptedPet pet = new JsonAdaptedPet(VALID_NAME, VALID_OWNER_NAME, ALICE.getPhone().value,
+                VALID_SPECIES, breed, VALID_REQUIREMENT);
+
+        Pet actualPet = pet.toModelType(VALID_PERSONS);
+
+        assertEquals(breed, actualPet.getBreed().value);
+        assertSame(ALICE, actualPet.getOwner());
+    }
+
+    @Test
+    public void toModelType_ownerNameConflictsWithPhone_throwsIllegalValueException() {
+        JsonAdaptedPet pet = new JsonAdaptedPet(VALID_NAME, VALID_OWNER_NAME, BOB.getPhone().value,
+                VALID_SPECIES, null, VALID_REQUIREMENT);
+
+        String expectedMessage = JsonAdaptedPet.MESSAGE_OWNER_DETAILS_MISMATCH;
+        assertThrows(IllegalValueException.class, expectedMessage, () -> pet.toModelType(VALID_PERSONS));
+    }
+
+    @Test
     public void toModelType_invalidName_throwsIllegalValueException() {
         JsonAdaptedPet pet = new JsonAdaptedPet("Milo!", VALID_OWNER_NAME, VALID_SPECIES, VALID_REQUIREMENT);
         assertThrows(IllegalValueException.class, PetName.MESSAGE_CONSTRAINTS, () -> pet.toModelType(VALID_PERSONS));

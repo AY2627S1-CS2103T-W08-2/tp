@@ -140,6 +140,45 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
+### Adding a pet to a person: `add-pet`
+
+Creates a pet profile for a person already in the address book. Identify the owner by phone number, not by name.
+The command reports the pet and owner's name when the profile is saved; it does not change the current person list.
+
+Format: `add-pet p/PET_NAME i/OWNER_IDENTIFIER s/SPECIES [b/BREED] r/REQUIREMENTS`
+
+* `PET_NAME`: 1–40 letters, digits, spaces, apostrophes, hyphens, or full stops.
+* `OWNER_IDENTIFIER`: the owner's existing eight-digit phone number, starting with `8` or `9`. Do not include spaces or hyphens.
+* `SPECIES`: `Dog`, `Cat`, `Rabbit`, `Guinea Pig`, or `Other`, ignoring letter case. `Guinea_Pig` is also accepted.
+* `BREED`: optional; if supplied, 2–50 letters, digits, spaces, apostrophes, hyphens, or full stops.
+* `REQUIREMENTS`: 5–240 characters describing grooming or care needs. Do not include `/` in a value.
+
+Each field may be supplied only once. More than one pet can belong to the same owner, but pet names under that owner
+must differ after ignoring letter case and extra whitespace. Different owners may have pets with the same name.
+
+Example output:
+* `add-pet p/Mochi i/87438807 s/Dog b/Golden retriever r/Nervous around dryers`<br>
+  Expected: `Pet added: Mochi (Dog, Golden retriever) under Alex Yeoh.`
+* `add-pet p/BuBu i/87438807 s/Cat r/Calm with baths`<br>
+  Expected: `Pet added: BuBu (Cat) under Alex Yeoh.`
+
+Invalid values produce these messages:
+
+| Field | Message |
+| --- | --- |
+| `PET_NAME` | `Pet name must be 1-40 characters and use valid name characters.` |
+| `OWNER_IDENTIFIER` | `Owner identifier must be a valid phone number belonging to the specified client.` |
+| `SPECIES` | `Species must be Dog, Cat, Rabbit, Guinea Pig, or Other.` |
+| `BREED` | `Breed must be 2-50 characters and use valid text characters.` |
+| `REQUIREMENTS` | `Requirements must be 5-240 characters and cannot contain /.` |
+
+A missing required field reports `Missing required field: [field].`; repeated fields report
+`Each pet field may be specified only once.` An unknown prefix or extra text outside a field reports
+`Invalid command format. Check the command syntax and try again.` A valid phone number with no registered owner reports
+`The owner identifier does not belong to the specified client.` A duplicate under the same owner reports
+`This client already has a pet named [PET_NAME].` If saving fails, the pet is not added and the app reports
+`Unable to save a pet. Please try again.`
+
 ### Clearing all entries: `clear`
 
 Clears all contacts from the address book. Any saved appointments are retained separately.
@@ -154,7 +193,7 @@ Format: `exit`
 
 ### Saving the data
 
-Contact data is saved automatically after successful contact commands. Appointments have a separate save file,
+Contact and pet data is saved automatically after successful commands. Appointments have a separate save file,
 `data/appointments.json`, which loads when the app starts. Scheduling in the app is pending owner/pet lookup integration;
 once enabled, each successful booking is saved automatically. You do not need to save manually.
 
@@ -163,7 +202,9 @@ once enabled, each successful booking is saved automatically. You do not need to
 AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid
+file is not changed during startup. `add-pet` will report `Unable to verify existing records. Please contact support.`
+and will not save a pet while the file is invalid. Other commands may overwrite the file, so back it up before editing it.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -192,6 +233,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add pet** | `add-pet p/PET_NAME i/OWNER_IDENTIFIER s/SPECIES [b/BREED] r/REQUIREMENTS`<br> e.g., `add-pet p/Mochi i/87438807 s/Dog r/Nervous around dryers`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
