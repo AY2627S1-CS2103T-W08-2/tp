@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add-client n/John Doe i/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -47,7 +47,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add-client n/NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
   For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
@@ -56,7 +56,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
   For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `n/NAME i/PHONE_NUMBER`, `i/PHONE_NUMBER n/NAME` is also acceptable.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
@@ -195,7 +195,7 @@ Deletes the specified pet from the address book.
 Format: `delete-pet p/PET_NAME i/OWNER_IDENTIFIER`
 
 * Both the pet name and its owner's phone number are required to identify the pet.
-* The owner phone number must contain exactly eight digits, starting with `8` or `9`.
+* The owner phone number must contain at least three digits.
 
 Example:
 * `delete-pet p/Milo i/98765432` deletes the pet named `Milo` owned by the person with phone number `98765432`.
@@ -214,18 +214,19 @@ Format: `exit`
 
 ### Saving the data
 
-Contact and pet data is saved automatically after successful commands. Appointments have a separate save file,
+Contact data is saved automatically after successful contact commands. Appointments have a separate save file,
 `data/appointments.json`, which loads when the app starts. Scheduling in the app is pending owner/pet lookup integration;
 once enabled, each successful booking is saved automatically. You do not need to save manually.
+Successful `add-pet` commands also save the new pet in `data/addressbook.json` automatically.
 
 ### Editing the data file
 
 AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid
-file is not changed during startup. `add-pet` will report `Unable to verify existing records. Please contact support.`
-and will not save a pet while the file is invalid. Other commands may overwrite the file, so back it up before editing it.<br>
+If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
+If the address-book file cannot be loaded, `add-pet` reports `Unable to verify existing records. Please contact support.`
+and does not overwrite the file.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
