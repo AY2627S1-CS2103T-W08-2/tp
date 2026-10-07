@@ -2,7 +2,6 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_IDENTIFIER;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.DeleteCommand;
@@ -20,16 +19,14 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
-            ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_IDENTIFIER);
+            ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" " + args.trim(), PREFIX_IDENTIFIER);
             argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_IDENTIFIER);
 
             boolean hasIndex = !argMultimap.getPreamble().isEmpty();
             boolean hasPhone = argMultimap.getValue(PREFIX_IDENTIFIER).isPresent();
 
             if (hasIndex == hasPhone) {
-                throw new ParseException(
-                        String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                        DeleteCommand.MESSAGE_USAGE));
+                throw new ParseException("Exactly one index or phone identifier must be provided.");
             }
             if (hasIndex) {
                 Index index = ParserUtil.parseIndex(args);

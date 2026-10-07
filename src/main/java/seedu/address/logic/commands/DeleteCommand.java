@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
@@ -13,16 +14,17 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 
 /**
- * Deletes a person identified using its displayed index from the address book.
+ * Deletes a person identified using its displayed index or phone number from the address book.
  */
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete-client";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Deletes the person identified by the index number used in the displayed person list.\n"
+            + ": Deletes a person by displayed index or phone number.\n"
             + "Parameters: INDEX (must be a positive integer), or i/PHONE_NUMBER\n"
-            + "Example: " + COMMAND_WORD + " 1";
+            + "Examples: " + COMMAND_WORD + " 1\n"
+            + "          " + COMMAND_WORD + " i/91234567";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
 
@@ -30,12 +32,12 @@ public class DeleteCommand extends Command {
     private final Phone phoneNumber;
 
     public DeleteCommand(Index targetIndex) {
-        this.targetIndex = targetIndex;
+        this.targetIndex = requireNonNull(targetIndex);
         this.phoneNumber = null;
     }
 
     public DeleteCommand(Phone phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = requireNonNull(phoneNumber);
         this.targetIndex = null;
     }
 
@@ -75,13 +77,19 @@ public class DeleteCommand extends Command {
             return false;
         }
 
-        return targetIndex.equals(otherDeleteCommand.targetIndex);
+        return Objects.equals(targetIndex, otherDeleteCommand.targetIndex)
+                && Objects.equals(phoneNumber, otherDeleteCommand.phoneNumber);
     }
 
     @Override
     public String toString() {
+        if (targetIndex != null) {
+            return new ToStringBuilder(this)
+                    .add("targetIndex", targetIndex)
+                    .toString();
+        }
         return new ToStringBuilder(this)
-                .add("targetIndex", targetIndex)
+                .add("phoneNumber", phoneNumber)
                 .toString();
     }
 }

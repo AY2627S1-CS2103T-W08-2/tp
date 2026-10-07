@@ -18,6 +18,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for
@@ -80,6 +81,20 @@ public class DeleteCommandTest {
     }
 
     @Test
+    public void execute_validPhoneNumber_success() {
+        Person personToDelete = model.getAddressBook().getPersonList().get(0);
+        DeleteCommand deleteCommand = new DeleteCommand(personToDelete.getPhone());
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
+                Messages.format(personToDelete));
+
+        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(personToDelete);
+
+        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
     public void equals() {
         DeleteCommand deleteFirstCommand = new DeleteCommand(INDEX_FIRST_PERSON);
         DeleteCommand deleteSecondCommand = new DeleteCommand(INDEX_SECOND_PERSON);
@@ -99,6 +114,9 @@ public class DeleteCommandTest {
 
         // different person -> returns false
         assertFalse(deleteFirstCommand.equals(deleteSecondCommand));
+
+        Phone phone = model.getAddressBook().getPersonList().get(0).getPhone();
+        assertTrue(new DeleteCommand(phone).equals(new DeleteCommand(phone)));
     }
 
     @Test
@@ -107,6 +125,11 @@ public class DeleteCommandTest {
         DeleteCommand deleteCommand = new DeleteCommand(targetIndex);
         String expected = DeleteCommand.class.getCanonicalName() + "{targetIndex=" + targetIndex + "}";
         assertEquals(expected, deleteCommand.toString());
+
+        Phone phone = model.getAddressBook().getPersonList().get(0).getPhone();
+        DeleteCommand phoneDeleteCommand = new DeleteCommand(phone);
+        String phoneExpected = DeleteCommand.class.getCanonicalName() + "{phoneNumber=" + phone + "}";
+        assertEquals(phoneExpected, phoneDeleteCommand.toString());
     }
 
     /**

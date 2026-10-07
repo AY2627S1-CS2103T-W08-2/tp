@@ -8,6 +8,7 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.model.person.Phone;
 
 /**
  * As we are only doing white-box testing, our test cases do not cover path variations
@@ -26,7 +27,18 @@ public class DeleteCommandParserTest {
     }
 
     @Test
+    public void parse_validPhoneIdentifier_returnsDeleteCommand() {
+        assertParseSuccess(parser, "i/91234567", new DeleteCommand(new Phone("91234567")));
+    }
+
+    @Test
     public void parse_invalidArgs_throwsParseException() {
         assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_indexAndPhoneIdentifier_throwsParseException() {
+        assertParseFailure(parser, "1 i/91234567",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
     }
 }
