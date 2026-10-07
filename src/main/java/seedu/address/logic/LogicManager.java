@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddPetCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
@@ -29,6 +30,7 @@ public class LogicManager implements Logic {
     public static final String MESSAGE_CORRUPTED_RECORDS =
             "Unable to verify existing records. Please contact support.";
     public static final String MESSAGE_UNABLE_TO_SAVE_PET = "Unable to save a pet. Please try again.";
+    public static final String MESSAGE_CLIENT_SAVE_FAILURE = "Unable to save client.";
     public static final String FILE_OPS_ERROR_FORMAT = "Could not save data due to the following error: %s";
 
     public static final String FILE_OPS_PERMISSION_ERROR_FORMAT =
@@ -86,14 +88,14 @@ public class LogicManager implements Logic {
         ReadOnlyAppointmentBook previousAppointments = command instanceof ScheduleCommand
                 ? new AppointmentBook(model.getAppointmentBook()) : null;
         CommandResult commandResult = command.execute(model);
-        saveCommandResult(previousAddressBook, previousAppointments);
+        saveCommandResult(command, previousAddressBook, previousAppointments);
         return commandResult;
     }
 
     /**
      * Saves the completed command and restores its previous data if saving fails.
      */
-    private void saveCommandResult(ReadOnlyAddressBook previousAddressBook,
+    private void saveCommandResult(Command command, ReadOnlyAddressBook previousAddressBook,
             ReadOnlyAppointmentBook previousAppointments) throws CommandException {
         try {
             if (previousAppointments != null) {
@@ -108,6 +110,9 @@ public class LogicManager implements Logic {
             }
             if (previousAppointments != null) {
                 model.setAppointmentBook(previousAppointments);
+            }
+            if (command instanceof AddCommand) {
+                throw new CommandException(MESSAGE_CLIENT_SAVE_FAILURE, ioe);
             }
             if (ioe instanceof AccessDeniedException) {
                 throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, ioe.getMessage()), ioe);

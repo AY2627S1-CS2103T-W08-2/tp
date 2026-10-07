@@ -1,5 +1,6 @@
 package seedu.address.storage;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -20,6 +21,7 @@ class JsonAdaptedPet {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Pet's %s field is missing!";
     public static final String MESSAGE_OWNER_NOT_FOUND = "Pet owner does not exist in the address book.";
+    public static final String MESSAGE_AMBIGUOUS_OWNER = "Pet owner name matches multiple clients.";
     public static final String MESSAGE_OWNER_DETAILS_MISMATCH = "Pet owner name and phone do not match.";
     private static final String OWNER_NAME_FIELD = "OwnerName";
     private static final String MESSAGE_INVALID_SPECIES = "Pet species is invalid.";
@@ -97,20 +99,42 @@ class JsonAdaptedPet {
 
     /**
      * Finds the owner by phone, falling back to the name in legacy records.
-     * Rejects records whose stored name conflicts with the owner identified by phone.
+     * Rejects ambiguous legacy names and names that conflict with a stored phone.
      */
     private Person findOwner(List<Person> persons) throws IllegalValueException {
         if (ownerName == null && ownerPhone == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, OWNER_NAME_FIELD));
         }
-        Person owner = persons.stream()
-                .filter(person -> ownerPhone == null
-                        ? person.getName().fullName.equals(ownerName)
-                        : person.getPhone().value.equals(ownerPhone))
-                .findFirst()
-                .orElseThrow(() -> new IllegalValueException(MESSAGE_OWNER_NOT_FOUND));
+        Person owner = ownerPhone == null ? findLegacyOwnerByName(persons) : findOwnerByPhone(persons);
         if (ownerName != null && !owner.getName().fullName.equals(ownerName)) {
             throw new IllegalValueException(MESSAGE_OWNER_DETAILS_MISMATCH);
+        }
+        return owner;
+    }
+
+    /**
+     * Finds the owner identified by the stored phone number.
+     */
+    private Person findOwnerByPhone(List<Person> persons) throws IllegalValueException {
+        return persons.stream()
+                .filter(person -> person.getPhone().value.equals(ownerPhone))
+                .findFirst()
+                .orElseThrow(() -> new IllegalValueException(MESSAGE_OWNER_NOT_FOUND));
+    }
+
+    /**
+     * Finds the sole owner with the stored name in a legacy pet record.
+     */
+    private Person findLegacyOwnerByName(List<Person> persons) throws IllegalValueException {
+        Iterator<Person> matchingOwners = persons.stream()
+                .filter(person -> person.getName().fullName.equals(ownerName))
+                .iterator();
+        if (!matchingOwners.hasNext()) {
+            throw new IllegalValueException(MESSAGE_OWNER_NOT_FOUND);
+        }
+        Person owner = matchingOwners.next();
+        if (matchingOwners.hasNext()) {
+            throw new IllegalValueException(MESSAGE_AMBIGUOUS_OWNER);
         }
         return owner;
     }

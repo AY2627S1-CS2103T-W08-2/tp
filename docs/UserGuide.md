@@ -73,19 +73,28 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a client: `add-client`
 
-Adds a person to the address book.
+Creates a booking contact and mobile grooming address. All four fields are required:
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+* Name: 2-60 characters using letters, spaces, apostrophes, hyphens or full stops.
+* Phone: exactly eight digits, starting with 8 or 9, without spaces or hyphens.
+* Email: one `@`, no whitespace, and non-empty local and domain parts. The domain must contain a full stop separating non-empty sections.
+* Address: 5-120 characters using letters, digits, spaces, commas, full stops, hyphens or `#`.
+
+A phone number or email already used by another client is rejected. Email comparisons are case-sensitive. Clients may share names and addresses. Each required field may appear only once; blank values count as missing. Surrounding whitespace is trimmed.
+
+Success displays `Client added: NAME (PHONE).` and shows the client in the list. A save failure displays `Unable to save client.`; the client remains in memory but may not survive a restart.
+
+Format: `add-client n/NAME i/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+* `add-client n/John Doe i/98765432 e/johnd@example.com a/John street, block 123, #01-01`
+* `add-client n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison i/91234567 t/criminal`
 
 ### Listing all persons: `list`
 
@@ -97,7 +106,7 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [i/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
@@ -106,7 +115,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 1 i/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
 ### Locating persons by name: `find`
@@ -179,6 +188,18 @@ A missing required field reports `Missing required field: [field].`; repeated fi
 `This client already has a pet named [PET_NAME].` If saving fails, the pet is not added and the app reports
 `Unable to save a pet. Please try again.`
 
+### Deleting a pet: `delete-pet`
+
+Deletes the specified pet from the address book.
+
+Format: `delete-pet p/PET_NAME i/OWNER_IDENTIFIER`
+
+* Both the pet name and its owner's phone number are required to identify the pet.
+* The owner phone number must contain exactly eight digits, starting with `8` or `9`.
+
+Example:
+* `delete-pet p/Milo i/98765432` deletes the pet named `Milo` owned by the person with phone number `98765432`.
+
 ### Clearing all entries: `clear`
 
 Clears all contacts from the address book. Any saved appointments are retained separately.
@@ -232,11 +253,12 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add-client n/NAME i/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add-client n/James Ho i/82224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 **Add pet** | `add-pet p/PET_NAME i/OWNER_IDENTIFIER s/SPECIES [b/BREED] r/REQUIREMENTS`<br> e.g., `add-pet p/Mochi i/87438807 s/Dog r/Nervous around dryers`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit INDEX [n/NAME] [i/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Delete pet** | `delete-pet p/PET_NAME i/OWNER_IDENTIFIER`<br> e.g., `delete-pet p/Milo i/98765432`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Help** | `help`

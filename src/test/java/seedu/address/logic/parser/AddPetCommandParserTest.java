@@ -123,4 +123,10 @@ public class AddPetCommandParserTest {
         assertThrows(ParseException.class, Requirement.MESSAGE_CONSTRAINTS, () ->
                 parser.parse(VALID_FIELDS.replace("Calm with baths", "Needs x/ care")));
     }
+
+    @Test
+    public void parse_recognizedPrefixAfterRequirements_reportsDuplicateField() {
+        assertThrows(ParseException.class, AddPetCommandParser.MESSAGE_DUPLICATE_FIELD, () ->
+                parser.parse(VALID_FIELDS.replace("Calm with baths", "Needs p/ care")));
+    }
 }
