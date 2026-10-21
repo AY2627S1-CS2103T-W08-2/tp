@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.client.Client;
-import seedu.address.model.client.Phone;
 
 /**
  * Represents a pet in the BuBu.
@@ -73,12 +72,6 @@ public class Pet {
         return new Pet(name, newOwner, species, breed, requirement);
     }
 
-    /** Returns whether this pet has the given owner phone and normalized name. */
-    public boolean isIdentifiedBy(Phone ownerPhone, PetName petName) {
-        requireAllNonNull(ownerPhone, petName);
-        return owner.getPhone().equals(ownerPhone) && name.hasSameName(petName);
-    }
-
     /**
      * Returns whether both pets belong to the same owner and have the same normalized name.
      * Case and repeated whitespace in the names do not affect identity.
@@ -88,7 +81,9 @@ public class Pet {
             return true;
         }
 
-        return otherPet != null && isIdentifiedBy(otherPet.owner.getPhone(), otherPet.name);
+        return otherPet != null
+                && owner.getPhone().equals(otherPet.owner.getPhone())
+                && name.getNormalizedName().equals(otherPet.name.getNormalizedName());
     }
 
     @Override
