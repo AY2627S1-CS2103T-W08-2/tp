@@ -38,6 +38,12 @@ The following commands perform common Gradle tasks.
 
 This project uses GitHub Actions for CI. The necessary workflow configuration files are in `.github/workflows`. No further setup is required.
 
+### UI test coverage across supported platforms
+
+The CI matrix runs Gradle checks on Ubuntu, macOS, and Windows. Linux runs JavaFX tests under `xvfb-run`, while macOS and Windows run the same UI tests using their native graphical environments.
+
+UI tests should run on all three platforms unless a genuine platform-specific limitation is documented together with an equivalent validation strategy. A successful build with skipped UI tests does not provide equivalent UI coverage, so unexpected skipped tests should be investigated.
+
 ### Code coverage
 
 As part of CI, Gradle generates JaCoCo coverage reports from the tests, and CI uploads the coverage data to Codecov. Codecov then provides information about test coverage.
