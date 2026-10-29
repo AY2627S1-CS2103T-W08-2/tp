@@ -15,6 +15,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -111,8 +112,10 @@ public class HelpCommandTest {
     @Test
     public void getCommandReference_editPet_explainsIndexAndIdentifierTargetingRestrictions() throws Exception {
         String commandReference = HelpCommand.getCommandReference();
-        String editPetReference = commandReference.substring(commandReference.indexOf("\nEdit pet\n"),
-                commandReference.indexOf("\nDelete pet\n"));
+        String editPetReference = commandReference.lines()
+                .dropWhile(line -> !line.equals("Edit pet"))
+                .takeWhile(line -> !line.equals("Delete pet"))
+                .collect(Collectors.joining("\n"));
 
         assertTrue(editPetReference.contains("Do not combine the targeting forms."));
         assertTrue(editPetReference.contains("Index editing requires the pet panel"));
