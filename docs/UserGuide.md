@@ -97,7 +97,8 @@ displayed, the deletion is rejected rather than applying the index to another li
 ### Shared error behavior
 
 If the data file is invalid at startup, commands other than `help` are blocked with
-`Unable to verify existing records. Please contact support.` Correct the file and restart BuBu before continuing.
+`Unable to verify existing records. Please contact support.` Restore an unchanged, valid BuBu backup and restart,
+or contact support before continuing.
 An unrecognised command word reports an unknown-command error. Use the exact lowercase command words below.
 When a save fails, previous records are restored in memory, but list filters or the visible selection may have changed.
 
@@ -156,7 +157,7 @@ add-client n/NAME i/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]...
 * `t/TAG` — optional; a non-empty alphanumeric label without spaces. Repeat `t/` for multiple tags; omit it for no tags. Duplicate tags are stored once.
 * Each required prefix may appear only once. Surrounding whitespace is trimmed; blank required values are rejected.
 * Phone numbers and emails must be unique across clients. Email domains are compared case-insensitively, while the local part (before `@`) remains case-sensitive: `alice@example.com` conflicts with `alice@EXAMPLE.COM`, but `Alice@example.com` is distinct. The entered spelling is preserved for display and storage. Names and addresses need not be unique.
-* The same uniqueness rule applies when loading saved data. If an older file contains emails differing only in domain capitalization, loading fails and commands are blocked to protect the original file; no clients are automatically merged or deleted. Back up the file, correct the conflicting contact details in the saved JSON, then restart BuBu.
+* The same uniqueness rule applies when loading saved data. If an older file contains emails differing only in domain capitalization, loading fails and commands are blocked to protect the original file; no clients are automatically merged or deleted. Keep the original file and restore an unchanged, valid BuBu backup before restarting.
 * A phone number already present in an unrelated historical appointment owner snapshot cannot be reused for a new client or a changed client phone number. This prevents client edits or deletions from changing another person's historical appointment.
 
 Required-field errors identify the field and distinguish an absent prefix from a blank value. For example, a missing `i/` reports `Phone number (i/) is required. Example: i/91234567.`, while a blank `e/` reports `Email (e/) cannot be blank.` A repeated `n/` reports `Name (n/) was supplied more than once. Keep only one n/ field.` The same wording applies to name, phone, email and address. Repeated `t/` fields remain valid. If multiple fields have errors, correct the reported field and retry.
@@ -258,7 +259,10 @@ Missing selectors are reported separately from blank `i/` selectors. Supply eith
 #### Success and other behavior
 
 * On success, BuBu displays `Edited client: ...` and selects the client panel while preserving its active filter. Updated clients appear only if they still match the filter; a client that stops matching remains saved but disappears from the view.
-* Linked pet owner profiles and owner details in ongoing and future appointments are updated, so `list-appointments` shows the current name and address. Completed appointments retain their recorded details, except that phone-number changes still update linked owner identifiers. Appointment dates, times, services and other pet details remain unchanged. An appointment is completed when its end date and time are at or before the time of the edit, using Singapore time.
+* Editing a client updates their saved profile, linked pet owner profiles, and owner details in ongoing and future appointments.
+* Completed appointments retain their recorded name, email, address and tags, so later client profile changes do not rewrite those past appointment details. An appointment is completed when its end date and time are at or before the time of the edit, using Singapore time. Use `list-clients` to obtain the client's current contact details.
+* Phone numbers are an exception: because they identify clients, a phone-number change also updates linked pets and all linked appointments, including completed appointments. Changing an email does not break these links.
+* Client edits preserve appointment dates, times, services and other pet details. Completed appointments can still be affected by linked pet renames or deletion: deleting a client or pet also deletes their linked appointments, including completed ones.
 * Changes are saved automatically. If saving fails, BuBu restores the previous records and displays a storage error.
 
 #### Error handling
@@ -792,23 +796,31 @@ and time are strictly after the time of the edit in Singapore time. Bookings end
 are completed and retain their historical details, except that linked owner-phone and pet-name changes still apply.
 Profile edits do not change appointment dates, times or services. Pet edits keep the recorded owner details;
 client edits keep the recorded pet details other than the pet's owner information.
+The owner's phone number links clients, pets, and appointments. Changing a client's email does not break these links;
+completed appointments keep their recorded email. Changing the phone number updates the linked pets and appointments.
 Deleting a client or pet also deletes their linked bookings. The recorded pet name is displayed with its capitalization.
 
 Older bookings that saved only an owner phone and pet name can be loaded while both participants remain
 registered. If either is missing, restore the missing participant from a backup before upgrading; those older
 bookings do not contain a full participant profile.
 
-### Editing the data file
+### Data files and supported backups
 
 By default, grooming records are saved in `data/bububook.json` relative to the terminal's working directory when
 BuBu is launched, with `clients`, `pets`, and `appointments` lists. Following the Quick start instructions makes
 this the folder containing the JAR. Always launch from the same folder to load the same records; launching from
-another folder can make BuBu use a different data file. Advanced users can edit the file while the app is closed.
+another folder can make BuBu use a different data file.
+
+Manage records using BuBu commands. BuBu does not support importing external JSON, merging data files, or manually
+editing saved records. You may copy or restore an unchanged backup of a file saved by BuBu while the app is closed.
+Every occurrence of an owner's phone number refers to the same client, including in completed appointments.
+Manually constructing records that give different people the same phone number is unsupported and can cause their
+records to be updated or deleted together; file validation does not detect every such inconsistency.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-Back up the file before editing it. If the file becomes invalid, BuBu starts with an empty model and blocks
+Keep a backup of the data file. If BuBu detects that the file is invalid, it starts with an empty model and blocks
 commands with `Unable to verify existing records. Please contact support.` to avoid overwriting your records.
-Correct the file and restart the app before continuing.
+Preserve the affected file and restore an unchanged, valid BuBu backup before restarting, or contact support.
 </div>
 
 ### Archiving data files `[coming in v2.0]`
