@@ -342,7 +342,9 @@ add-pet p/PET_NAME i/OWNER_IDENTIFIER s/SPECIES [b/BREED] r/REQUIREMENTS
 * `p/PET_NAME` — required; 1–40 letters, digits, spaces, apostrophes, hyphens or full stops.
 * `i/OWNER_IDENTIFIER` — required; an existing client's eight-digit phone number starting with `8` or `9`.
 * `s/SPECIES` — required; `Dog`, `Cat`, `Rabbit`, `Guinea Pig` or `Other`, ignoring case. `Guinea_Pig` is also accepted.
-* `b/BREED` — optional; 2–50 letters, digits, spaces, apostrophes, hyphens or full stops. Omit it when unknown; an empty supplied value is invalid.
+* `b/BREED` — optional; 2–50 characters after trimming, using only letters, digits, spaces, straight apostrophes (`'`), hyphens (`-`) or full stops (`.`). Omit it when unknown; an empty or whitespace-only supplied value is invalid.
+  For mixed breeds, use a description such as `b/Poodle-Labrador mix`; `/` and `&` are not accepted.
+  BuBu checks the text format only; it does not verify that the breed exists or matches the selected species.
 * `r/REQUIREMENTS` — required; 5–240 characters and may contain `/`, e.g. `shampoo/conditioner`. A space followed by a recognised prefix starts another field.
 * Each prefix may appear only once. Under one owner, pet names must be unique after ignoring case and extra whitespace. Different owners may have pets with the same name.
 * Separate fields with ordinary spaces. Tabs inside the command are part of field values, not field separators.
@@ -428,7 +430,9 @@ edit-pet p/PET_NAME i/OWNER_IDENTIFIER [n/NEW_PET_NAME] [s/SPECIES] [b/BREED] [r
 * `i/OWNER_IDENTIFIER` — required with `p/`; the current owner's eight-digit phone number starting with `8` or `9`.
 * `n/NEW_PET_NAME` — optional replacement name with the same constraints. It must not match another pet under the owner after case and whitespace normalisation.
 * `s/SPECIES` — optional; `Dog`, `Cat`, `Rabbit`, `Guinea Pig` or `Other`, ignoring case. `Guinea_Pig` is also accepted.
-* `b/BREED` — optional; 2–50 letters, digits, spaces, apostrophes, hyphens or full stops. Use `b/` alone to remove the breed.
+* `b/BREED` — optional; a nonblank replacement must contain 2–50 characters after trimming, using only letters, digits, spaces, straight apostrophes (`'`), hyphens (`-`) or full stops (`.`). Use `b/` alone (or a whitespace-only value) to remove the breed; omit the field to keep it unchanged.
+  For mixed breeds, use a description such as `b/Poodle-Labrador mix`; `/` and `&` are not accepted.
+  BuBu checks the text format only; it does not verify that the breed exists or matches the selected species.
 * `r/REQUIREMENTS` — optional; 5–240 characters and may contain `/`, e.g. `shampoo/conditioner`. A space followed by a recognised prefix starts another field.
 * Supply either `INDEX` or both `p/PET_NAME` and `i/OWNER_IDENTIFIER`, not both targeting forms. Supply at least one update. Omitted fields are unchanged. Every prefix may appear only once.
 
@@ -832,7 +836,16 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous BuBu home folder.
+**A**: With the default data-file location, follow these steps:
+
+1. Close BuBu on both computers and keep a backup of `data/bububook.json` from your original launch folder.
+2. Put the JAR in your intended launch folder on the other computer. Create a `data` subfolder there if it does not exist.
+3. Copy your backup into that subfolder as `bububook.json`. If a destination file already exists, back it up before replacing it.
+4. Open a terminal in that same launch folder and run `java -jar bubu.jar`. BuBu will load the copied records.
+
+A fresh launch without a data file loads sample records into memory; it does not create `data/bububook.json`.
+You do not need to add a dummy record before copying your backup. Keep the destination app closed while copying:
+an already-open window retains its in-memory records and may reject later changes because the data file changed externally.
 
 --------------------------------------------------------------------------------------------------------------------
 
