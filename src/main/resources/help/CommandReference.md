@@ -54,9 +54,12 @@ List pets
   Restrictions: i/ is optional and may appear once; it must identify an existing client using an 8-digit phone starting with 8 or 9. No keyword or pet-name filter is supported.
 
 Edit pet
+  edit-pet INDEX [n/NEW_PET_NAME] [s/SPECIES] [b/BREED] [r/REQUIREMENTS]
   edit-pet p/PET_NAME i/OWNER_IDENTIFIER [n/NEW_PET_NAME] [s/SPECIES] [b/BREED] [r/REQUIREMENTS]
   Restrictions:
-    p/ and i/ are required and identify the pet by its current name and owner's 8-digit phone starting with 8 or 9. Name lookup ignores case and repeated whitespace.
+    Choose one target: a positive, one-based INDEX in the displayed pet list, or both p/PET_NAME and i/OWNER_IDENTIFIER. Do not combine the targeting forms.
+    Index editing requires the pet panel and uses its filtered and sorted order. Name-and-phone lookup searches all saved pets, including hidden pets, from any panel.
+    PET_NAME is the current name; lookup ignores case and repeated whitespace. OWNER_IDENTIFIER is the current owner's 8-digit phone starting with 8 or 9.
     Supply at least one update. NEW_PET_NAME follows the pet-name rules and must remain unique for that owner after normalization. SPECIES follows add-pet rules.
     BREED follows add-pet rules; use b/ with no value to remove the breed. REQUIREMENTS follows add-pet rules.
     Each prefix may appear once. Ownership cannot be changed. Linked ongoing and future appointments receive updated pet details; completed appointments keep recorded pet details except for a changed pet name. An appointment is completed if its end date and time are at or before the edit time in Singapore time. Appointment dates, times, services and recorded owner details remain unchanged.

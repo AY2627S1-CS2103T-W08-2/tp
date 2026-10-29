@@ -94,6 +94,8 @@ public class HelpCommandTest {
         assertTrue(commandReference.contains("list-clients [q/KEYWORD]"));
         assertTrue(commandReference.contains("list-pets [i/OWNER_IDENTIFIER]"));
         assertTrue(commandReference.contains(
+                "edit-pet INDEX [n/NEW_PET_NAME] [s/SPECIES] [b/BREED] [r/REQUIREMENTS]"));
+        assertTrue(commandReference.contains(
                 "edit-pet p/PET_NAME i/OWNER_IDENTIFIER [n/NEW_PET_NAME] [s/SPECIES] [b/BREED] [r/REQUIREMENTS]"));
         assertTrue(commandReference.contains("delete-pet INDEX"));
         assertTrue(commandReference.contains("delete-pet p/PET_NAME i/OWNER_IDENTIFIER"));
@@ -104,6 +106,19 @@ public class HelpCommandTest {
         assertTrue(commandReference.contains("delete-appointment d/DD-MM-YYYY st/HH:mm"));
         assertTrue(commandReference.contains("clear"));
         assertTrue(commandReference.contains("exit"));
+    }
+
+    @Test
+    public void getCommandReference_editPet_explainsIndexAndIdentifierTargetingRestrictions() throws Exception {
+        String commandReference = HelpCommand.getCommandReference();
+        String editPetReference = commandReference.substring(commandReference.indexOf("\nEdit pet\n"),
+                commandReference.indexOf("\nDelete pet\n"));
+
+        assertTrue(editPetReference.contains("Do not combine the targeting forms."));
+        assertTrue(editPetReference.contains("Index editing requires the pet panel"));
+        assertTrue(editPetReference.contains("filtered and sorted order"));
+        assertTrue(editPetReference.contains("Name-and-phone lookup searches all saved pets"));
+        assertTrue(editPetReference.contains("including hidden pets, from any panel"));
     }
 
     /** Captures warning diagnostics emitted while executing a simulated help reference failure. */
