@@ -820,7 +820,16 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous BuBu home folder.
+**A**: With the default data-file location, follow these steps:
+
+1. Close BuBu on both computers and keep a backup of `data/bububook.json` from your original launch folder.
+2. Put the JAR in your intended launch folder on the other computer. Create a `data` subfolder there if it does not exist.
+3. Copy your backup into that subfolder as `bububook.json`. If a destination file already exists, back it up before replacing it.
+4. Open a terminal in that same launch folder and run `java -jar bubu.jar`. BuBu will load the copied records.
+
+A fresh launch without a data file loads sample records into memory; it does not create `data/bububook.json`.
+You do not need to add a dummy record before copying your backup. Keep the destination app closed while copying:
+an already-open window retains its in-memory records and may reject later changes because the data file changed externally.
 
 --------------------------------------------------------------------------------------------------------------------
 
