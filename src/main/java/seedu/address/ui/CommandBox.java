@@ -26,6 +26,7 @@ public class CommandBox extends UiPart<Region> {
     private int historyIndex;
     private String commandDraft = "";
     private boolean isCommandDraftDisplayed;
+    private boolean isSubmittedCommandDisplayed;
 
     @FXML
     private TextField commandTextField;
@@ -37,7 +38,10 @@ public class CommandBox extends UiPart<Region> {
         super(FXML);
         this.commandExecutor = commandExecutor;
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
-        commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
+        commandTextField.textProperty().addListener((unused1, unused2, unused3) -> {
+            setStyleToDefault();
+            isSubmittedCommandDisplayed = false;
+        });
         commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleHistoryNavigation);
     }
 
@@ -55,6 +59,7 @@ public class CommandBox extends UiPart<Region> {
         historyIndex = commandHistory.size();
         commandDraft = "";
         isCommandDraftDisplayed = false;
+        isSubmittedCommandDisplayed = true;
 
         try {
             commandExecutor.execute(commandText);
@@ -88,6 +93,7 @@ public class CommandBox extends UiPart<Region> {
     /**
      * Saves an edited or unfinished command separately before navigating away from it.
      * An unchanged recalled command is already present in the history and is not saved as a draft.
+     * A failed submission is also already recorded, but editing its retained text creates a new draft.
      */
     private void saveCurrentCommandBeforeNavigating() {
         String currentCommand = commandTextField.getText();
@@ -98,9 +104,7 @@ public class CommandBox extends UiPart<Region> {
                 return;
             }
 
-            boolean isDifferentFromNewestCommand = !currentCommand.isEmpty()
-                    && !currentCommand.equals(commandHistory.get(commandHistory.size() - 1));
-            if (isDifferentFromNewestCommand) {
+            if (!currentCommand.isEmpty() && !isSubmittedCommandDisplayed) {
                 commandDraft = currentCommand;
             }
             return;
@@ -147,6 +151,7 @@ public class CommandBox extends UiPart<Region> {
     /** Replaces the command field text and positions its caret at the end for immediate editing. */
     private void setCommandText(String commandText) {
         commandTextField.setText(commandText);
+        isSubmittedCommandDisplayed = false;
         commandTextField.positionCaret(commandText.length());
     }
     //@@author

@@ -16,6 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.exceptions.ParseException;
 
 /** Contains unit tests for command-history navigation in {@code CommandBox}. */
 public class CommandBoxTest {
@@ -97,6 +98,119 @@ public class CommandBoxTest {
             assertCommandText(commandTextField, "add-pet p/BuBu");
             press(commandTextField, KeyCode.DOWN);
             assertCommandText(commandTextField, "");
+        });
+    }
+
+    @Test
+    public void commandHistory_draftMatchingNewestCommand_restoresDraftWithoutExecutingIt() {
+        JavaFxTestUtils.runAndWait(() -> {
+            List<String> executedCommands = new ArrayList<>();
+            CommandBox commandBox = new CommandBox(command -> {
+                executedCommands.add(command);
+                return new CommandResult("Executed");
+            });
+            TextField commandTextField = getCommandTextField(commandBox);
+            submit(commandTextField, "list-pets");
+            submit(commandTextField, "help");
+
+            // EP: a new draft can have the same text as the newest submitted command.
+            commandTextField.setText("help");
+            press(commandTextField, KeyCode.UP);
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "help");
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "");
+
+            assertEquals(List.of("list-pets", "help"), executedCommands);
+        });
+    }
+
+    @Test
+    public void commandHistory_newDraftMatchingNewestCommand_replacesPreviouslySavedDraft() {
+        JavaFxTestUtils.runAndWait(() -> {
+            CommandBox commandBox = new CommandBox(command -> new CommandResult("Executed"));
+            TextField commandTextField = getCommandTextField(commandBox);
+            submit(commandTextField, "list-pets");
+            submit(commandTextField, "help");
+            commandTextField.setText("add-pet p/BuBu");
+            press(commandTextField, KeyCode.UP);
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "add-pet p/BuBu");
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "");
+
+            // EP: replacing an older draft must work even when the new draft matches history.
+            commandTextField.setText("help");
+            press(commandTextField, KeyCode.UP);
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "help");
+        });
+    }
+
+    @Test
+    public void commandHistory_uneditedFailedSubmission_doesNotCreateDraft() {
+        JavaFxTestUtils.runAndWait(() -> {
+            CommandBox commandBox = new CommandBox(command -> {
+                throw new ParseException("Invalid syntax");
+            });
+            TextField commandTextField = getCommandTextField(commandBox);
+            submit(commandTextField, "invalid-command");
+
+            // EP: retained failed input is already submitted and must not become a second draft.
+            press(commandTextField, KeyCode.UP);
+            assertCommandText(commandTextField, "invalid-command");
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "");
+        });
+    }
+
+    @Test
+    public void commandHistory_retypedFailedSubmission_restoresNewDraft() {
+        JavaFxTestUtils.runAndWait(() -> {
+            List<String> executedCommands = new ArrayList<>();
+            CommandBox commandBox = new CommandBox(command -> {
+                executedCommands.add(command);
+                throw new CommandException("Invalid command");
+            });
+            TextField commandTextField = getCommandTextField(commandBox);
+            submit(commandTextField, "invalid-command");
+
+            // EP: clearing and retyping failed input creates a draft despite identical final text.
+            commandTextField.clear();
+            commandTextField.setText("invalid-command");
+            press(commandTextField, KeyCode.UP);
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "invalid-command");
+            assertEquals(List.of("invalid-command"), executedCommands);
+        });
+    }
+
+    @Test
+    public void commandHistory_submittingRecalledCommand_resetsNavigationAndClearsSavedDraft() {
+        JavaFxTestUtils.runAndWait(() -> {
+            List<String> executedCommands = new ArrayList<>();
+            CommandBox commandBox = new CommandBox(command -> {
+                executedCommands.add(command);
+                return new CommandResult("Executed");
+            });
+            TextField commandTextField = getCommandTextField(commandBox);
+            submit(commandTextField, "list-pets");
+            submit(commandTextField, "help");
+            commandTextField.setText("add-pet p/BuBu");
+            press(commandTextField, KeyCode.UP);
+            press(commandTextField, KeyCode.UP);
+            assertCommandText(commandTextField, "list-pets");
+
+            commandTextField.fireEvent(new ActionEvent());
+            assertCommandText(commandTextField, "");
+            press(commandTextField, KeyCode.UP);
+            assertCommandText(commandTextField, "list-pets");
+            press(commandTextField, KeyCode.UP);
+            assertCommandText(commandTextField, "help");
+            press(commandTextField, KeyCode.DOWN);
+            press(commandTextField, KeyCode.DOWN);
+            assertCommandText(commandTextField, "");
+            assertEquals(List.of("list-pets", "help", "list-pets"), executedCommands);
         });
     }
 
