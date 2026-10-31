@@ -1,55 +1,63 @@
 @startuml
 !include style.puml
+!pragma layout smetana
 skinparam arrowThickness 1.1
 skinparam arrowColor UI_COLOR_T4
 skinparam classBackgroundColor UI_COLOR
 
-package UI <<Rectangle>>{
-Class "<<interface>>\nUi" as Ui
-Class "{abstract}\nUiPart" as UiPart
-Class UiManager
-Class MainWindow
-Class ResultDisplay
-Class PersonListPanel
-Class PersonCard
-Class StatusBarFooter
-Class CommandBox
+package UI {
+interface Ui
+abstract class "UiPart<T>" as UiPart
+class UiManager
+class MainWindow
+class CommandBox
+interface "CommandBox.CommandExecutor" as CommandExecutor
+class ResultDisplay
+class StatusBarFooter
+class ClientListPanel
+class ClientCard
+class PetListPanel
+class PetCard
+class AppointmentListPanel
+class AppointmentCard
 }
-
-package Model <<Rectangle>> {
-Class HiddenModel #FFFFFF
+package Logic {
+interface "Logic" as LogicApi LOGIC_COLOR
 }
-
-package Logic <<Rectangle>> {
-Class HiddenLogic #FFFFFF
+package Model {
+class Client MODEL_COLOR
+class Pet MODEL_COLOR
+class Appointment MODEL_COLOR
 }
-
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Ui
-
-UiManager .left.|> Ui
-UiManager -down-> "1" MainWindow
-MainWindow *-down->  "1" CommandBox
-MainWindow *-down-> "1" ResultDisplay
-MainWindow *-down-> "1" PersonListPanel
-MainWindow *-down-> "1" StatusBarFooter
-
-PersonListPanel -down-> "*" PersonCard
-
-MainWindow -left-|> UiPart
-
-ResultDisplay --|> UiPart
+UiManager ..|> Ui
+UiManager --> "0..1" MainWindow
+UiManager --> "1" LogicApi
+MainWindow --> "1" LogicApi
+CommandBox --> "1" CommandExecutor
+MainWindow ..> CommandExecutor : supplies callback
+MainWindow *--> "1" CommandBox
+MainWindow *--> "1" ResultDisplay
+MainWindow *--> "1" StatusBarFooter
+MainWindow *--> "1" ClientListPanel
+MainWindow *--> "1" PetListPanel
+MainWindow *--> "1" AppointmentListPanel
+MainWindow --|> UiPart
 CommandBox --|> UiPart
-PersonListPanel --|> UiPart
-PersonCard --|> UiPart
+ResultDisplay --|> UiPart
 StatusBarFooter --|> UiPart
-
-PersonCard ..> Model
-UiManager -right-> Logic
-MainWindow -left-> Logic
-
-CommandBox -[hidden]left- ResultDisplay
-ResultDisplay -[hidden]left- StatusBarFooter
-
-MainWindow -[hidden]-|> UiPart
+ClientListPanel --|> UiPart
+PetListPanel --|> UiPart
+AppointmentListPanel --|> UiPart
+ClientCard --|> UiPart
+PetCard --|> UiPart
+AppointmentCard --|> UiPart
+ClientListPanel ..> ClientCard : creates via cells
+ClientListPanel ..> Client : displays observable list
+ClientCard --> "1" Client
+PetListPanel ..> PetCard : creates via cells
+PetListPanel ..> Pet : displays observable list
+PetCard --> "1" Pet
+AppointmentListPanel ..> AppointmentCard : creates via cells
+AppointmentListPanel ..> Appointment : displays observable list
+AppointmentCard --> "1" Appointment
 @enduml
