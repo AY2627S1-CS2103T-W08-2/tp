@@ -34,9 +34,9 @@ import seedu.address.ui.pet.PetListPanel;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-    private static final String CLIENTS_TITLE = "👥 Clients";
-    private static final String PETS_TITLE = "🐾 Pets";
-    private static final String APPOINTMENTS_TITLE = "📅 Appointments";
+    private static final String CLIENTS_TITLE = "Clients";
+    private static final String PETS_TITLE = "Pets";
+    private static final String APPOINTMENTS_TITLE = "Appointments";
     private static final String SINGLE_RECORD_FORMAT = "%d record";
     private static final String MULTIPLE_RECORDS_FORMAT = "%d records";
     private static final double DEFAULT_RESULT_DISPLAY_HEIGHT = 100;
