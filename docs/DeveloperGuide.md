@@ -326,6 +326,7 @@ in [Command execution](#command-execution).
 
 
 #### Model API and data ownership
+{:.no_toc}
 
 `Model` defines the component API. `ModelManager` implements that API and owns separate `BubuBook` and `UserPrefs`
 containers initialized from the supplied data; immutable record objects can be shared with the source book.
@@ -339,8 +340,10 @@ The model has no dependency on the `Logic`, `UI`, or `Storage` components. Those
 the domain data.
 
 #### Records and identity
+{:.no_toc}
 
 ##### Clients
+{:.no_toc}
 
 Clients are represented as immutable `Client` records with a name, phone, email, address, and tags. A client is considered
 a duplicate when another client has the same phone number or email address. Email identity ignores case throughout
@@ -351,6 +354,7 @@ used by a different appointment owner snapshot (see
 [Historical appointment snapshots and linked-record consistency](#historical-appointment-snapshots-and-linked-record-consistency)).
 
 ##### Pets
+{:.no_toc}
 
 Pets are represented as immutable `Pet` records with a name, owner, species, optional breed, and grooming requirements.
 Each pet refers to its owning `Client`; when the book adds or replaces a pet, it resolves that owner to the matching
@@ -359,6 +363,7 @@ owner and letter case or leading, trailing, and repeated whitespace do not affec
 for identity comparisons; `PetName` retains the supplied spelling, and full pet equality compares all profile fields.
 
 ##### Appointments
+{:.no_toc}
 
 Appointments are represented as immutable records containing owner and pet snapshots, date, start and end times, and
 service. The date and start time identify a booking slot; full appointment equality includes all fields.
@@ -369,6 +374,7 @@ start to be strictly in the future in Singapore time. These checks are separate 
 historical appointments and their original participant snapshots to be loaded and retained.
 
 #### Validation and linked-record updates
+{:.no_toc}
 
 The model uses immutable value objects for field validation, with `Species` and `Service` represented as enums. For example,
 `AppointmentDate` validates a real calendar date, `StartTime` permits 08:00–19:30, and `EndTime` permits 08:30–20:00,
@@ -379,6 +385,7 @@ The model coordinates linked-record updates through `BubuBook`. The detailed app
 [Historical appointment snapshots and linked-record consistency](#historical-appointment-snapshots-and-linked-record-consistency).
 
 #### Bulk data replacement
+{:.no_toc}
 
 `BubuBook` stages and validates the complete replacement book in `resetData` before changing its live lists. The bulk setters
 have narrower responsibilities: `setClients` checks client uniqueness and resolves registered pet owners before
@@ -389,6 +396,7 @@ retains the supplied participant snapshots. The observable list instances remain
 UI views continue to receive changes (see [Loading data](#loading-data) for reconstruction from storage).
 
 #### Display views
+{:.no_toc}
 
 `ModelManager` maintains observable display views for clients, pets, and appointments by filtering and sorting the book's lists.
 Pets are ordered by owner name (case-insensitive), owner phone, and normalized pet name; appointments are ordered by
@@ -397,6 +405,7 @@ that sort remains active for subsequent list changes. Changing a filter updates 
 than replacing its backing list. Display ordering does not reorder the saved lists in `BubuBook`.
 
 #### Record relationships
+{:.no_toc}
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** These are complementary class diagrams. The overview above shows the model API, owned containers, and display views. Collection membership uses ordinary associations because immutable records can be shared with snapshots. The diagram below expands the record fields and participant relationships; an appointment's owner and pet are snapshots and may differ from the currently registered profiles. Association roles identify participant references, which are not repeated as attributes. Reading-direction markers are shown for the `stores` association labels.<br>
 
@@ -2194,7 +2203,7 @@ negative test, while restoring an unchanged backup is the supported recovery wor
    2. Test case: In the isolated test file, replace the contents with `{` and launch BuBu.
       Submit `list-pets` and a valid `add-pet` command.<br>
       Expected: The window opens without loaded records. Both commands report
-      `Unable to verify existing records. Please contact support.` The malformed file remains unchanged.
+      `Unable to load saved records. See the User Guide for backup restoration steps.` The malformed file remains unchanged.
       `help` works. Close the application using its window controls.
 
    3. Test case: Repeat step 2 with a zero-byte record file.<br>
