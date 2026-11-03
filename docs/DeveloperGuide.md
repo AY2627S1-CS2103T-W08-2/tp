@@ -18,6 +18,17 @@ title: Developer Guide
 * Architecture diagrams were created using [PlantUML](https://plantuml.com/).
 * The project documentation is generated using [Jekyll](https://jekyllrb.com/).
 
+### Notable uses of AI
+
+Members of our team used ChatGPT and Codex throughout the project to assist with:
+
+- Refining code for features and bug fixes.
+- Suggesting test cases and assisting with test implementation.
+- Refining the User Guide and Developer Guide.
+- Performing preliminary code reviews and suggesting improvements.
+- Generating the blue "B" icon used in BuBu and on its website
+- Refining the JavaFX interface and its CSS
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Setting up, getting started**
