@@ -80,6 +80,7 @@ public class JsonAdaptedClientTest {
     //@@author anderschow
     @Test
     public void toModelType_oversizedEmail_throwsIllegalValueException() {
+        // EP: Stored email exceeding the maximum length by one character or by a very large domain.
         for (String email : List.of("a".repeat(Email.MAX_LENGTH - 5) + "@b.com",
                 "a@" + "b.".repeat(6000) + "com")) {
             JsonAdaptedClient client =
@@ -90,6 +91,7 @@ public class JsonAdaptedClientTest {
 
     @Test
     public void toModelType_unicodeWhitespaceEmail_throwsIllegalValueException() {
+        // EP: Stored email with Unicode whitespace in the local part, domain label, or final domain section.
         for (String space : new String[]{"\u00a0", "\u2003", "\u202f", "\u3000"}) {
             for (String email : new String[]{"alice" + space + "tan@example.com",
                 "alice@exam" + space + "ple.com", "alice@example.c" + space + "om"}) {

@@ -22,6 +22,8 @@ public class AddressTest {
     //@@author anderschow
     @Test
     public void isValidAddress() {
+        // EP: Null, blank, out-of-range length, or unsupported characters versus permitted address text (5-120
+        // characters).
         // null address
         assertThrows(NullPointerException.class, () -> Address.isValidAddress(null));
 

@@ -82,6 +82,7 @@ public class HelpCommandTest {
     //@@author anderschow
     @Test
     public void getCommandReference_containsAllDocumentedCommands() throws Exception {
+        // EP: Available command reference containing entries for each supported command.
         String commandReference = HelpCommand.getCommandReference();
 
         assertTrue(commandReference.contains("help"));

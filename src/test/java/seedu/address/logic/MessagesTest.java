@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 public class MessagesTest {
     @Test
     public void getErrorMessageForDuplicatePrefixes_noDuplicates_rejectsInvalidCaller() {
+        // EP: Invalid caller input containing no duplicate prefixes.
         assertThrows(AssertionError.class, "Duplicate-prefix reporting requires at least one detected duplicate",
                 Messages::getErrorMessageForDuplicatePrefixes);
     }

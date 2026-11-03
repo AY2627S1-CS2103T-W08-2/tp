@@ -16,6 +16,7 @@ public class ListClientsCommandParserTest {
     //@@author anderschow
     @Test
     public void parse_validQuery_success() {
+        // EP: No query versus valid nonblank queries of 1-60 characters, including spaces, punctuation, and Unicode.
         assertParseSuccess(parser, "  ", new ListClientsCommand());
         for (String keyword : new String[]{"a", "a".repeat(60), "O'Neil-Jr. @mail #12", "Amelia Tan",
             "sam+grooming", "10 Sunset Road,", "a_b", "a/b", "a!", "\u00e9", "$%^&*()=?:;[]{}"}) {
@@ -25,6 +26,8 @@ public class ListClientsCommandParserTest {
 
     @Test
     public void parse_invalidQuery_failure() {
+        // EP: Blank, overlength, or control-character queries; duplicate query prefixes; and unsupported argument
+        // forms.
         for (String keyword : new String[]{"", "   ", "a".repeat(61), "a\tb", "a\nb", "a\u0000b", "a\u007fb"}) {
             assertParseFailure(parser, " q/" + keyword, ListClientsCommand.MESSAGE_INVALID_KEYWORD);
         }

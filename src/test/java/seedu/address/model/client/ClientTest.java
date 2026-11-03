@@ -44,6 +44,7 @@ public class ClientTest {
     //@@author anderschow
     @Test
     public void isSameClient() {
+        // EP: Same reference, null, shared name/address only, shared phone only, and shared email only.
         // same object -> returns true
         assertTrue(ALICE.isSameClient(ALICE));
 
@@ -107,6 +108,8 @@ public class ClientTest {
 
     @Test
     public void equals_emailDomainCase_distinguishesDataButNotIdentity() {
+        // EP: Case-only email differences: unequal stored client data but matching identity; exact copies remain
+        // equal.
         Client lower = new ClientBuilder(ALICE).withEmail("alice@example.com").build();
         Client upper = new ClientBuilder(lower).withEmail("alice@EXAMPLE.COM").build();
         assertFalse(lower.equals(upper));

@@ -24,6 +24,7 @@ public class ListClientsCommandTest {
     //@@author anderschow
     @Test
     public void execute_emailQuery_preservesLiteralUnicodeMatching() {
+        // EP: Email query with matching Unicode code points ignoring case versus a canonically equivalent spelling.
         Client sam = new ClientBuilder().withName("Sam Tan").withEmail("cafe\u0301@example.com").build();
         model.addClient(sam);
         new ListClientsCommand("CAFE\u0301").execute(model);
@@ -34,6 +35,7 @@ public class ListClientsCommandTest {
 
     @Test
     public void execute_queryWithContactPunctuation_matchesLiteralSubstring() throws Exception {
+        // EP: Literal punctuation substrings in email/address versus regex-like text with no literal match.
         Client sam = new ClientBuilder().withName("Sam Tan").withPhone("89998888")
                 .withEmail("sam+grooming_test!/care@example.com").withAddress("10 Sunset Road, #01-02").build();
         model.addClient(sam);
@@ -49,6 +51,7 @@ public class ListClientsCommandTest {
 
     @Test
     public void execute_noQuery_resetsFilterAndSortsWithoutChangingRecords() throws Exception {
+        // EP: No query with an active filter on a nonempty book: restore and sort the displayed list.
         model.addClient(zoe);
         model.addClient(amelia);
         ObservableList<Client> displayed = model.getFilteredClientList();
@@ -64,6 +67,7 @@ public class ListClientsCommandTest {
 
     @Test
     public void execute_query_matchesEachContactFieldIgnoringCase() throws Exception {
+        // EP: Matching substrings in name, phone, email, and address, including case differences.
         model.addClient(zoe);
         model.addClient(amelia);
         for (String query : List.of("MEL", "7654", "@EXAMPLE.COM", "SUNSET ROAD", "#01-02")) {
@@ -76,6 +80,7 @@ public class ListClientsCommandTest {
 
     @Test
     public void execute_noMatches_successWithEmptyList() {
+        // EP: Nonempty book with a query matching no clients.
         model.addClient(amelia);
         assertEquals("No clients match \"Nobody\".", new ListClientsCommand("Nobody")
                 .execute(model).getFeedbackToUser());
@@ -84,6 +89,7 @@ public class ListClientsCommandTest {
 
     @Test
     public void execute_emptyBubu_success() {
+        // EP: Empty book with no search query.
         assertEquals("Listed all clients.", new ListClientsCommand().execute(model).getFeedbackToUser());
         assertEquals(List.of(), model.getFilteredClientList());
     }

@@ -45,6 +45,7 @@ public class MainWindowTest {
     //@@author anderschow
     @Test
     public void handleHelp_commandFailure_logsCauseAndAllowsRetry() {
+        // EP: Help command failure followed by a successful retry.
         JavaFxTestUtils.runAndWait(() -> {
             CommandException failure = new CommandException("Help unavailable");
             StubLogic logic = new StubLogic();
@@ -85,6 +86,7 @@ public class MainWindowTest {
     //@@author khangsian0412
     @Test
     public void executeCommand_helpAndRegularCommand_updatesResultDisplay() {
+        // EP: Help result versus ordinary command result: expanded help display versus normal feedback.
         JavaFxTestUtils.runAndWait(() -> {
             StubLogic logic = new StubLogic();
             MainWindow mainWindow = new MainWindow(new Stage(), logic, Path.of("bubu.json"));

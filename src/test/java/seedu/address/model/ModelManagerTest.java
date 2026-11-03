@@ -193,6 +193,8 @@ public class ModelManagerTest {
     //@@author anderschow
     @Test
     public void equals() {
+        // EP: Equal models or the same reference versus null, another type, or different records, filters, or
+        // preferences.
         BubuBook bubuBook = new BubuBookBuilder().withClient(ALICE).withClient(BENSON).build();
         BubuBook differentBubuBook = new BubuBook();
         UserPrefs userPrefs = new UserPrefs();

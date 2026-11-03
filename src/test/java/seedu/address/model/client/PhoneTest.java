@@ -22,6 +22,8 @@ public class PhoneTest {
     //@@author anderschow
     @Test
     public void isValidPhone() {
+        // EP: Null, blank, nonnumeric, wrong-length, or wrong-leading-digit phones versus eight digits starting with 8
+        // or 9.
         // null phone number
         assertThrows(NullPointerException.class, () -> Phone.isValidPhone(null));
 
@@ -47,6 +49,7 @@ public class PhoneTest {
 
     @Test
     public void equals() {
+        // EP: Same reference or equal phone values versus null, another type, or different values.
         Phone phone = new Phone("99999999");
 
         // same values -> returns true

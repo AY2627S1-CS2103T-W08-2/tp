@@ -40,6 +40,7 @@ public class BuBuParserTest {
     //@@author anderschow
     @Test
     public void parseCommand_add() throws Exception {
+        // EP: Recognised add-client command with valid client arguments.
         Client client = new ClientBuilder().build();
         AddClientCommand command = (AddClientCommand) parser.parseCommand(ClientUtil.getAddClientCommand(client));
         assertEquals(new AddClientCommand(client), command);
@@ -133,6 +134,7 @@ public class BuBuParserTest {
     //@@author anderschow
     @Test
     public void parseCommand_removedClientCommands_throwsUnknownCommand() {
+        // EP: Removed client command names: unsupported commands.
         for (String input : List.of("find", "find Alex", "list", "list q/Alex")) {
             assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand(input));
         }
@@ -148,6 +150,7 @@ public class BuBuParserTest {
     //@@author anderschow
     @Test
     public void parseCommand_listClients() throws Exception {
+        // EP: Recognised list-clients command with no arguments, with or without surrounding whitespace.
         assertTrue(parser.parseCommand(ListClientsCommand.COMMAND_WORD) instanceof ListClientsCommand);
         assertTrue(parser.parseCommand(" " + ListClientsCommand.COMMAND_WORD + " ") instanceof ListClientsCommand);
     }
