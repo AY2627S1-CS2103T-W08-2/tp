@@ -34,7 +34,7 @@ BuBu helps **freelance pet groomers** keep track of clients, their pets and groo
     * [Clear all entries](#clearing-all-entries-clear)
     * [Exit BuBu](#exiting-the-program-exit)
     * [Saving the data](#saving-the-data)
-    * [Data files and backups](#data-files-and-supported-backups)
+    * [Data files, backups and recovery](#data-files-backups-and-recovery)
 * [FAQ](#faq)
 * [Known issues](#known-issues)
 * [Command summary](#command-summary)
@@ -46,11 +46,11 @@ BuBu helps **freelance pet groomers** keep track of clients, their pets and groo
 1. Install Java 25. On a Mac, follow the [macOS Java installation guide](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 2. Download `bubu.jar` from the [BuBu releases page](https://github.com/AY2627S1-CS2103T-W08-2/tp/releases) and put it in a folder where you can save files.
 3. Open a terminal in that folder and run `java -jar bubu.jar`. Use the same folder each time so BuBu can find your records.
-4. On a fresh launch, try `list-clients q/87438807` and press <kbd>Enter</kbd>. With the sample records, the feedback reads `Found 1 client(s).` and the list shows Alex Yeoh. Type `list-clients` to see everyone again.
+4. Type `list-clients` in the command box and press <kbd>Enter</kbd>. BuBu displays `Listed all clients.` and shows the client list. On a fresh launch, sample clients are provided so you can explore the app.
 
-   ![Alex Yeoh’s client card beneath the feedback “Found 1 client(s).”](images/Ui.png)
+   ![Client list showing six records, with Alex Yeoh and Bernice Yu visible beneath the feedback “Listed all clients.”](images/Ui.png)
 
-   *Searching for 87438807 returns one matching client, Alex Yeoh.*
+   *The sample client list after running `list-clients`. Scroll down to view the remaining clients.*
 
 5. Enter a command in the command box and press <kbd>Enter</kbd>. BuBu shows feedback in the box below it.
    Try these commands to explore the app:
@@ -158,7 +158,7 @@ displayed, the deletion is rejected rather than applying the index to another li
 If BuBu rejects a command, your saved records stay as they were. Read the feedback below the command box, correct the input and press <kbd>Enter</kbd> to try again.
 
 If BuBu cannot load your saved records, follow the recovery instructions under
-[Data files and supported backups](#data-files-and-supported-backups). Help remains available while other valid commands are blocked.
+[Data files, backups and recovery](#data-files-backups-and-recovery). Help remains available while other valid commands are blocked.
 
 BuBu checks client phone and email uniqueness when it loads saved records. For example, client emails that differ only in domain capitalisation make the data file invalid. BuBu does not merge or delete these records automatically; preserve the file and restore a valid backup before restarting.
 An unrecognised command word reports an unknown-command error. Use the exact lowercase command words below.
@@ -783,7 +783,7 @@ clear
 #### Common issues
 
 * Storage error — the data file cannot be written, for example because of file or folder permissions.
-* `Unable to verify existing records. Please contact support.` — `clear` and other valid commands except `help` are
+* `Unable to load saved records. See the User Guide for backup restoration steps.` — `clear` and other valid commands except `help` are
   blocked because the data file was invalid at startup. Malformed or unrecognised commands report parsing errors first.
   Viewing help does not enable clearing the records.
 
@@ -813,7 +813,7 @@ exit
 
 #### Common issues
 
-* `Unable to verify existing records. Please contact support.` — valid commands except `help`, including `exit`, are
+* `Unable to load saved records. See the User Guide for backup restoration steps.` — valid commands except `help`, including `exit`, are
   blocked by the startup data-file error; close the window instead. Malformed or unrecognised commands report parsing
   errors first. Typed `help`, **Help → Help**, and <kbd>F1</kbd> remain available.
 
@@ -825,9 +825,9 @@ do not create or rewrite this file. Window preferences are saved separately in `
 
 If saving fails, BuBu restores the previous records in the open window and displays an error.
 If another window has changed the file, close and reopen BuBu before retrying; if another window is still saving,
-wait and retry as instructed. See [Data files and supported backups](#data-files-and-supported-backups) for file locations and recovery.
+wait and retry as instructed. See [Data files, backups and recovery](#data-files-backups-and-recovery) for file locations and recovery.
 
-### Data files and supported backups
+### Data files, backups and recovery
 
 By default, grooming records are saved in `data/bububook.json` relative to the terminal's working directory when
 BuBu is launched, with `clients`, `pets`, and `appointments` lists. Following the Quick start instructions makes
@@ -837,21 +837,36 @@ another folder can make BuBu use a different data file.
 Leave `data/bububook.json.lock` in place while BuBu is open. This file coordinates saves between windows;
 it may remain after the app closes, even though the lock is no longer held.
 
-Manage records using BuBu commands. BuBu does not support importing external JSON, merging data files, or manually
-editing saved records. You may copy or restore an unchanged backup of a file saved by BuBu while the app is closed.
-Every occurrence of an owner's phone number refers to the same client, including in completed appointments.
-Manually constructing records that give different people the same phone number is unsupported and can cause their
-records to be updated or deleted together; file validation does not detect every such inconsistency.
+Manage records using BuBu commands. Importing external JSON, merging data files and manually editing saved records
+are not supported. To back up or restore your records, copy the unchanged data file while BuBu is closed.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-Keep a backup of the data file. If BuBu detects that the file is invalid, it opens without displaying your records.
-Valid commands except `help` cannot execute and report `Unable to verify existing records. Please contact support.`
-to avoid overwriting your records. Malformed or unrecognised commands report their usual parsing errors first;
-these errors do not enable commands or make records writable.
-Typed `help`, **Help → Help**, and <kbd>F1</kbd> still display the command reference without saving records. List commands
-and `exit` remain blocked. Close the window, preserve the affected file, and restore an unchanged, valid BuBu backup
-while the app is closed before restarting, or contact support. Viewing help does not repair the file or remove the block.
-</div>
+#### Restoring your records from a backup
+
+If BuBu cannot read or validate your saved data, the window opens without your records. Valid commands other than
+`help` report `Unable to load saved records. See the User Guide for backup restoration steps.` BuBu blocks these commands to protect
+the existing file; an empty display does not mean your saved records have been deleted.
+
+**To restore a backup** (using the default file location):
+
+1. **Close every BuBu window using the window's close button.** The `exit` command is blocked in this state.
+2. **Open the folder you normally launch BuBu from**, then open its `data` subfolder. If you followed Quick start,
+   this is the folder containing `bubu.jar`.
+3. **Preserve the affected file first.** Copy `data/bububook.json` to a separate folder before replacing it.
+   Do not edit its contents. If you cannot copy it, stop; do not replace the file until you have preserved a copy.
+4. **Restore a known-good backup.** Copy an unchanged `bububook.json` that you previously backed up from a working
+   BuBu installation into the `data` subfolder, replacing the affected file. Ensure its name is exactly
+   `bububook.json`. Restoring it returns your records to the backup's state; later changes will not be included.
+5. **Restart from the same launch folder** using `java -jar bubu.jar`. Run `list-clients` and `list-pets` to check
+   the restored records. Use `list-appointments d/DD-MM-YYYY` with a date from your backup to check its bookings,
+   including completed appointments.
+
+**If you have no valid backup, or the error persists:** keep the affected file unchanged. BuBu has no built-in
+repair tool and does not provide a data-recovery service. You can try another known-good backup if one is available;
+otherwise, these steps cannot restore your records. Do not delete the file to make BuBu start with sample data;
+sample records do not restore your own records.
+
+You can still use `help`, **Help → Help**, or <kbd>F1</kbd> while loading is blocked. Help does not repair the file.
+Malformed commands may show syntax errors instead of the loading error; this does not mean the file has recovered.
 
 --------------------------------------------------------------------------------------------------------------------
 
