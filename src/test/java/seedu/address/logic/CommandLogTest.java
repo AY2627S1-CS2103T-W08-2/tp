@@ -19,6 +19,7 @@ import seedu.address.testutil.ClientBuilder;
 public class CommandLogTest {
     @Test
     public void rejectionReason_invalidContactFields_reportsCategoryWithoutInput() {
+        // EP: Known field-validation and duplicate-contact errors, plus unrecognised parse and command errors.
         assertEquals("invalid client name format",
                 CommandLog.getRejectionReason(new ParseException(ClientName.MESSAGE_CONSTRAINTS)));
         assertEquals("invalid email format",
@@ -37,6 +38,7 @@ public class CommandLogTest {
 
     @Test
     public void changedClientFields_multipleClientsChanged_reportsEachFieldOnlyOnce() {
+        // EP: Repeated changes to the same fields across clients, and records with no changes.
         Client first = new ClientBuilder().withPhone("81112222").withEmail("first@example.com").build();
         Client second = new ClientBuilder().withPhone("82223333").withEmail("second@example.com").build();
         BubuBook before = new BubuBook();

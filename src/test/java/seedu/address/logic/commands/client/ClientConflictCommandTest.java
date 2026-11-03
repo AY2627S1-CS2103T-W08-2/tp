@@ -18,6 +18,7 @@ import seedu.address.testutil.EditClientDescriptorBuilder;
 public class ClientConflictCommandTest {
     @Test
     public void execute_emailCaseConflict_rejectedEvenWhenHidden() {
+        // EP: Case-equivalent email owned by another client, with that client visible or hidden, for add and edit.
         Client existing = new ClientBuilder().withPhone("81112222").withEmail("alice@example.com").build();
         Client target = new ClientBuilder().withPhone("82223333").withEmail("bob@example.com").build();
         for (boolean filtered : new boolean[]{false, true}) {
@@ -37,6 +38,7 @@ public class ClientConflictCommandTest {
 
     @Test
     public void execute_editOwnEmailCase_preservesEnteredSpelling() throws Exception {
+        // EP: Case-only change to the target client's own email: a valid edit.
         ModelManager model = new ModelManager();
         Client target = new ClientBuilder().withEmail("alice@example.com").build();
         model.addClient(target);
@@ -47,6 +49,7 @@ public class ClientConflictCommandTest {
 
     @Test
     public void execute_conflicts_reportAllConflictingFieldsWithoutChangingRecords() {
+        // EP: Phone-only, email-only, and combined conflicts with one or two clients, visible or hidden.
         Client target = new ClientBuilder().withPhone("81111111").withEmail("target@example.com").build();
         Client first = new ClientBuilder().withPhone("82222222").withEmail("first@example.com").build();
         Client second = new ClientBuilder().withPhone("83333333").withEmail("second@example.com").build();
@@ -76,6 +79,7 @@ public class ClientConflictCommandTest {
 
     @Test
     public void execute_editOwnValuesAndDistinctEmail_success() throws Exception {
+        // EP: Unchanged own values and a distinct client's email with a case-only edit.
         ModelManager model = new ModelManager();
         Client target = new ClientBuilder().withPhone("81111111").withEmail("first@example.com").build();
         model.addClient(target);

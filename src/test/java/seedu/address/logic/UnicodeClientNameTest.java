@@ -23,6 +23,7 @@ public class UnicodeClientNameTest {
 
     @Test
     public void addAndSearch_canonicallyEquivalentNames_matchIgnoringCase() throws Exception {
+        // EP: Canonically equivalent and case-varied name queries versus queries with missing or different accents.
         BuBuParser parser = new BuBuParser();
         for (String name : List.of("Jos\u00e9 Tan", "Jose\u0301 Tan")) {
             Model model = new ModelManager();
@@ -42,6 +43,7 @@ public class UnicodeClientNameTest {
 
     @Test
     public void addAndEdit_unicodeNames_surviveStorageRoundTrip() throws Exception {
+        // EP: Valid composed, decomposed, non-Latin, and supplementary Unicode names in add/edit storage round trips.
         BuBuParser parser = new BuBuParser();
         JsonBubuBookStorage storage = new JsonBubuBookStorage(testFolder.resolve("unicode.json"));
         String[] inputs = {"José Tan", "李小明", "Jose\u0301 Tan", "अनिता", "\uD840\uDC00".repeat(60)};
@@ -64,6 +66,7 @@ public class UnicodeClientNameTest {
 
     @Test
     public void addAndEdit_invalidNames_reportSharedConstraint() {
+        // EP: Invalid names containing digits or emoji, or outside the normalized length limits.
         BuBuParser parser = new BuBuParser();
         for (String name : new String[]{"José1", "李😀", "e\u0301", "李".repeat(61)}) {
             assertThrows(ParseException.class, ClientName.MESSAGE_CONSTRAINTS, () -> parser.parseCommand(

@@ -14,6 +14,7 @@ public class EmailTest {
     //@@author anderschow
     @Test
     public void equals_caseIgnored_spellingPreserved() {
+        // EP: Emails differing only in local-part or domain case: equal identity with original spelling retained.
         Email lower = new Email("alice@example.com");
         Email mixed = new Email("Alice@Example.COM");
         assertEquals(lower, mixed);
@@ -39,6 +40,8 @@ public class EmailTest {
     //@@author anderschow
     @Test
     public void isValidEmail() {
+        // EP: Null, blank, missing components, whitespace, repeated separators, or empty domain sections versus valid
+        // syntax.
         // null email
         assertThrows(NullPointerException.class, () -> Email.isValidEmail(null));
 
@@ -81,6 +84,7 @@ public class EmailTest {
     //@@author anderschow
     @Test
     public void isValidEmail_lengthBoundaryAndOversizedDomain() {
+        // EP: Email lengths below/at the maximum versus above it, for long local parts and domains.
         String maximumEmail = "a".repeat(Email.MAX_LENGTH - "@example.com".length()) + "@example.com";
         assertTrue(Email.isValidEmail(maximumEmail.substring(1)));
         assertTrue(Email.isValidEmail(maximumEmail));
@@ -96,6 +100,7 @@ public class EmailTest {
 
     @Test
     public void isValidEmail_unicodeWhitespace_rejectedInEveryPart() {
+        // EP: Unicode whitespace within each email component or at either end: invalid emails.
         for (String space : new String[]{"\u00a0", "\u2003", "\u202f", "\u3000", "\u0085", "\u2028"}) {
             for (String email : new String[]{"alice" + space + "tan@example.com",
                 "alice@exam" + space + "ple.com", "alice@example.c" + space + "om",
@@ -109,6 +114,7 @@ public class EmailTest {
 
     @Test
     public void equals() {
+        // EP: Same reference or equal email values versus null, another type, or different values.
         Email email = new Email("valid@email.com");
 
         // same values -> returns true

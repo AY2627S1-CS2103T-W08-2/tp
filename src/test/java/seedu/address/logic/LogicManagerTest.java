@@ -74,6 +74,7 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_emailDomainCaseEdit_persistsSpellingAndSkipsExactNoOp() throws Exception {
+        // EP: Own email with case-only changes, another client's case-equivalent email, and an exact no-op edit.
         logic.execute("add-client n/Alice Tan i/91234567 e/alice@example.com a/123 Test Road");
         String edit = "edit-client i/91234567 e/alice@EXAMPLE.COM";
         logic.execute(edit);
@@ -96,6 +97,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_editClientIndex_requiresClientPanel() throws Exception {
+        // EP: Index edits while the client panel is displayed versus either non-client panel.
         model.addClient(ALICE);
         for (String listCommand : new String[]{"list-pets", "list-appointments"}) {
             logic.execute(listCommand);
@@ -114,6 +116,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_revisedClientManualCases_matchFeedbackAndPreserveRecords() throws Exception {
+        // EP: Unmatched nonblank query, blank queries, and invalid, missing, or blank edit selectors.
         model.addClient(ALICE);
         CommandResult result = logic.execute("list-clients q/zoe!");
         assertEquals("No clients match \"zoe!\".", result.getFeedbackToUser());
@@ -137,6 +140,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_logsSafeOutcomesAndStorageFailure() throws Exception {
+        // EP: Successful writes, successful read-only commands, parse rejection, and storage failure.
         Logger logger = Logger.getLogger("ab3");
         Level previousLevel = logger.getLevel();
         List<LogRecord> records = new ArrayList<>();
@@ -183,6 +187,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_clientSaveFailures_preserveCauseAndRestoreRelatedRecords() {
+        // EP: Client add/edit save failures caused by general I/O errors versus access denial.
         model.addClient(ALICE);
         model.addPet(new PetBuilder(ALICE).build());
         model.addAppointment(createAppointment(ALICE, "Milo", new AppointmentDate("01-01-9999"),
@@ -224,6 +229,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_help_doesNotCreateOrRewriteDataFile() throws Exception {
+        // EP: Read-only help command with a missing data file versus an existing data file.
         assertCommandsDoNotCreateOrRewriteDataFile(List.of("help"));
     }
 
@@ -291,6 +297,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_invalidEditClientInput_preservesRecords() {
+        // EP: Missing, blank, malformed, or nonpositive selectors; no updates; and invalid replacement phone.
         model.addClient(ALICE);
         Model expected = new ModelManager(model.getBubuBook(), new UserPrefs());
         for (String arguments : List.of("n/Alice Tan", "i/ n/Alice Tan", "unexpected n/Alice Tan",
@@ -302,6 +309,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_missingBlankRepeatedAddFields_preserveRecords() {
+        // EP: Each required add-client field absent, blank, or repeated.
         model.addClient(ALICE);
         Model expected = new ModelManager(model.getBubuBook(), new UserPrefs());
         String[] fields = {" n/Alice Tan", " i/89998888", " e/new@example.com", " a/123 Test Road"};
@@ -330,6 +338,7 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_emailLengthBoundary_addAndEditValidateBeforeMutation() throws Exception {
+        // EP: Valid email at the maximum length versus emails exceeding it by one or many characters.
         String maximumEmail = "a@" + "b.".repeat(124) + "comx";
         assertEquals(seedu.address.model.client.Email.MAX_LENGTH, maximumEmail.length());
         logic.execute("add-client n/Alice Tan i/81112222 a/123 Test Road e/" + maximumEmail);
@@ -341,6 +350,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_unicodeWhitespaceEmail_rejectsAddAndEditWithoutChangingModelOrFile() throws Exception {
+        // EP: Invalid Unicode whitespace in each email component versus valid local-part punctuation.
         logic.execute("add-client n/Alice Tan i/81112222 e/alice@example.com a/123 Test Road");
         List<String> invalidEmails = new ArrayList<>();
         for (String space : new String[]{"\u00a0", "\u2003", "\u202f", "\u3000"}) {
@@ -454,6 +464,7 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_editClientFromFilteredList_updatesLinksAndSaves() throws Exception {
+        // EP: Existing filtered client whose edited phone no longer matches the filter, with linked records.
         model.addClient(AMY);
         model.addClient(ALICE);
         model.addPet(new PetBuilder(ALICE).build());
@@ -481,6 +492,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_editClientFromOtherPanels_displaysClients() throws Exception {
+        // EP: Phone-based edits while either the pet or appointment panel is displayed.
         model.addClient(ALICE);
         for (String command : List.of("list-pets", "list-appointments")) {
             logic.execute(command);
@@ -491,6 +503,7 @@ public class LogicManagerTest {
     }
     @Test
     public void execute_editClientRejectsHiddenDuplicatePhoneAndEmail() throws Exception {
+        // EP: Replacement phone or email already belonging to a client hidden by the filter.
         model.addClient(ALICE);
         model.addClient(AMY);
         logic.execute("list-clients q/" + ALICE.getPhone());
@@ -505,6 +518,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_editClientSaveFails_restoresLinkedRecords() {
+        // EP: Valid edit with linked records whose save fails with an I/O error.
         model.addClient(ALICE);
         model.addPet(new PetBuilder(ALICE).build());
         model.addAppointment(createAppointment(ALICE.getPhone(), "Milo", new AppointmentDate("01-01-9999"),
@@ -538,6 +552,7 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_validCommand_success() throws Exception {
+        // EP: Valid list-clients command with no query.
         String listCommand = ListClientsCommand.COMMAND_WORD;
         assertCommandSuccess(listCommand, ListClientsCommand.MESSAGE_SUCCESS, model);
     }
@@ -733,11 +748,13 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
+        // EP: Save failure caused by a general I/O exception.
         assertCommandFailureForExceptionFromStorage(DUMMY_IO_EXCEPTION, LogicManager.MESSAGE_CLIENT_SAVE_FAILURE);
     }
 
     @Test
     public void execute_storageThrowsAdException_throwsCommandException() {
+        // EP: Save failure caused by denied file access.
         assertCommandFailureForExceptionFromStorage(DUMMY_AD_EXCEPTION,
                 LogicManager.MESSAGE_CLIENT_SAVE_PERMISSION_FAILURE);
     }
@@ -881,6 +898,7 @@ public class LogicManagerTest {
     //@@author anderschow
     @Test
     public void execute_addClient_savesWithoutClearingFilter() throws Exception {
+        // EP: Valid client addition while a client search filter is active.
         model.updateFilteredClientList(client -> false);
         CommandResult result = logic.execute("add-client n/Amelia Tan i/91234567 "
                 + "e/amelia@example.com a/12 Punggol Drive t/regular");

@@ -33,7 +33,7 @@ import seedu.address.ui.UiManager;
 public class MainApp extends Application {
 
     //@@author anderschow
-    public static final String VERSION = "V1.5";
+    public static final String VERSION = "V1.6";
     //@@author
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);

@@ -14,6 +14,7 @@ public class ClientNameTest {
     //@@author anderschow
     @Test
     public void constructor_unicodeNames_normalizesToNfc() {
+        // EP: Canonically equivalent composed/decomposed names and valid names in non-Latin scripts.
         ClientName composed = new ClientName("Jos\u00e9 Tan");
         ClientName decomposed = new ClientName("Jose\u0301 Tan");
         assertEquals("Jos\u00e9 Tan", decomposed.fullName);
@@ -26,6 +27,8 @@ public class ClientNameTest {
 
     @Test
     public void isValidName_unicodeLength_countsNormalizedCodePoints() {
+        // EP: Normalized lengths below, within, and above 2-60 code points, including supplementary and combining
+        // characters.
         String supplementaryLetter = "\uD840\uDC00";
         for (String unit : new String[]{"A", "e\u0301", supplementaryLetter}) {
             assertFalse(ClientName.isValidName(unit));
@@ -40,6 +43,7 @@ public class ClientNameTest {
 
     @Test
     public void isValidName_disallowedUnicodeCharacters_returnsFalse() {
+        // EP: Disallowed digits, punctuation, emoji, control/format characters, and unpaired surrogates.
         for (String name : new String[]{"李1", "José@", "李😀", "李\t明", "李\n明", "李\u200B明", "\uD840"}) {
             assertFalse(ClientName.isValidName(name));
         }

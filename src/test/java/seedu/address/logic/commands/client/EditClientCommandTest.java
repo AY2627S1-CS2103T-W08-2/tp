@@ -43,6 +43,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_indexInFilteredList_preservesFilterAndUsesDisplayedOrder() throws Exception {
+        // EP: Valid displayed index in a filtered list where displayed and stored positions differ.
         Client first = model.getBubuBook().getClientList().get(0);
         Client second = model.getBubuBook().getClientList().get(1);
         showClientAtIndex(model, INDEX_SECOND_CLIENT);
@@ -56,6 +57,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_indexOutOfRange_failure() {
+        // EP: Index above the displayed list's upper bound, in unfiltered and filtered lists.
         assertCommandFailure(new EditClientCommand(Index.fromOneBased(model.getFilteredClientList().size() + 1),
                 DESC_AMY), model, Messages.MESSAGE_INVALID_CLIENT_DISPLAYED_INDEX);
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
@@ -65,6 +67,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_indexDuplicateHiddenClient_failure() {
+        // EP: Valid displayed index with a replacement phone belonging to a hidden client.
         Client hidden = model.getBubuBook().getClientList().get(1);
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
         assertCommandFailure(new EditClientCommand(INDEX_FIRST_CLIENT,
@@ -74,6 +77,7 @@ public class EditClientCommandTest {
 
     @Test
     public void equals_indexTargets() {
+        // EP: Same index and descriptor versus different index, selector type, or descriptor.
         EditClientCommand command = new EditClientCommand(INDEX_FIRST_CLIENT, DESC_AMY);
         assertEquals(command, new EditClientCommand(INDEX_FIRST_CLIENT, DESC_AMY));
         assertFalse(command.equals(new EditClientCommand(INDEX_SECOND_CLIENT, DESC_AMY)));
@@ -84,6 +88,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_allFieldsSpecifiedUnfilteredList_success() {
+        // EP: Existing phone target with all editable fields supplied in an unfiltered list.
         Client editedClient = new ClientBuilder().build();
         EditClientDescriptor descriptor = new EditClientDescriptorBuilder(editedClient).build();
         EditClientCommand editCommand = new EditClientCommand(firstPhone, descriptor);
@@ -99,6 +104,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_someFieldsSpecifiedUnfilteredList_success() {
+        // EP: Existing phone target with only some editable fields supplied.
         Index indexLastClient = Index.fromOneBased(model.getFilteredClientList().size());
         Client lastClient = model.getFilteredClientList().get(indexLastClient.getZeroBased());
 
@@ -121,6 +127,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_noFieldSpecifiedUnfilteredList_success() {
+        // EP: Existing phone target with an empty descriptor at the command layer: a no-op.
         EditClientCommand editCommand = new EditClientCommand(firstPhone, new EditClientDescriptor());
         Client editedClient = model.getFilteredClientList().get(INDEX_FIRST_CLIENT.getZeroBased());
 
@@ -134,6 +141,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_filteredList_success() {
+        // EP: Phone target visible in a filtered list whose edited values no longer match the filter.
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
 
         Client clientInFilteredList = model.getFilteredClientList().get(INDEX_FIRST_CLIENT.getZeroBased());
@@ -153,6 +161,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_duplicateClientUnfilteredList_failure() {
+        // EP: Replacement phone and email belonging to another client in an unfiltered list.
         Client firstClient = model.getFilteredClientList().get(INDEX_FIRST_CLIENT.getZeroBased());
         EditClientDescriptor descriptor = new EditClientDescriptorBuilder(firstClient).build();
         EditClientCommand editCommand = new EditClientCommand(secondPhone, descriptor);
@@ -162,6 +171,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_duplicateClientFilteredList_failure() {
+        // EP: Replacement phone and email belonging to another client hidden by the filter.
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
 
         // edit client in filtered list into a duplicate in BuBu
@@ -176,6 +186,7 @@ public class EditClientCommandTest {
     //@@author anderschow
     @Test
     public void execute_unknownPhone_failure() {
+        // EP: Well-formed phone selector that does not identify a saved client.
         EditClientCommand command = new EditClientCommand(new Phone("89998888"),
                 new EditClientDescriptorBuilder().withName(VALID_NAME_BOB).build());
         assertCommandFailure(command, model, EditClientCommand.MESSAGE_CLIENT_NOT_FOUND);
@@ -183,6 +194,7 @@ public class EditClientCommandTest {
 
     @Test
     public void execute_hiddenClient_success() throws Exception {
+        // EP: Existing phone target hidden by the active client filter.
         Client hidden = model.getFilteredClientList().get(1);
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
         new EditClientCommand(hidden.getPhone(),
@@ -193,6 +205,7 @@ public class EditClientCommandTest {
     //@@author anderschow
     @Test
     public void equals() {
+        // EP: Same reference or equal values versus null, another type, different phone, or different descriptor.
         final EditClientCommand standardCommand = new EditClientCommand(firstPhone, DESC_AMY);
 
         // same values -> returns true
@@ -218,6 +231,7 @@ public class EditClientCommandTest {
 
     @Test
     public void toStringMethod() {
+        // EP: Phone-based command with an empty descriptor, represented using its identifier.
         Phone identifier = new Phone("91234567");
         EditClientDescriptor editClientDescriptor = new EditClientDescriptor();
         EditClientCommand editCommand = new EditClientCommand(identifier, editClientDescriptor);
@@ -228,6 +242,7 @@ public class EditClientCommandTest {
 
     @Test
     public void toString_indexTarget_identifiesDisplayedIndex() {
+        // EP: Index-based command with an empty descriptor, represented using its displayed index.
         EditClientDescriptor descriptor = new EditClientDescriptor();
         EditClientCommand command = new EditClientCommand(INDEX_FIRST_CLIENT, descriptor);
         assertEquals(EditClientCommand.class.getCanonicalName() + "{targetIndex=" + INDEX_FIRST_CLIENT
@@ -239,6 +254,7 @@ public class EditClientCommandTest {
     //@@author anderschow
     @Test
     public void execute_changeOnlyPhoneOrEmailToHiddenClient_failure() {
+        // EP: Email-only and phone-only changes conflicting with a hidden client.
         Client other = model.getBubuBook().getClientList().get(1);
         showClientAtIndex(model, INDEX_FIRST_CLIENT);
         EditClientCommand duplicateEmail = new EditClientCommand(firstPhone,

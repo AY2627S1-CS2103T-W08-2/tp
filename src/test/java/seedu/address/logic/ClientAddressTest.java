@@ -22,6 +22,7 @@ public class ClientAddressTest {
 
     @Test
     public void addAndEdit_apostropheAddress_survivesStorageRoundTrip() throws Exception {
+        // EP: Valid address containing an ASCII apostrophe, used by both add and edit.
         BuBuParser parser = new BuBuParser();
         Model model = new ModelManager();
         JsonBubuBookStorage storage = new JsonBubuBookStorage(testFolder.resolve("addresses.json"));
@@ -40,6 +41,7 @@ public class ClientAddressTest {
 
     @Test
     public void addAndEdit_invalidAddresses_reportSharedConstraint() {
+        // EP: Invalid address partitions: below minimum length, above maximum length, and unsupported punctuation.
         BuBuParser parser = new BuBuParser();
         for (String address : new String[]{"1234", "A".repeat(121), "12 Road @ 3", "12 Road / 3"}) {
             assertThrows(ParseException.class, Address.MESSAGE_CONSTRAINTS, () -> parser.parseCommand(

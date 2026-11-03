@@ -40,6 +40,7 @@ public class JsonSerializableBubuBookTest {
 
     @Test
     public void read_emailCaseConflict_rejectsWithoutChangingFile() throws Exception {
+        // EP: Stored clients with distinct phones but case-equivalent emails: duplicate records.
         JsonAdaptedClient first = new JsonAdaptedClient(new ClientBuilder()
                 .withPhone("81112222").withEmail("alice@example.com").build());
         JsonAdaptedClient second = new JsonAdaptedClient(new ClientBuilder()
@@ -56,6 +57,7 @@ public class JsonSerializableBubuBookTest {
 
     @Test
     public void readAndSave_distinctEmails_preservesEmailSpelling() throws Exception {
+        // EP: Stored clients with distinct emails containing mixed case: preserve their original spelling.
         BubuBook book = new BubuBook();
         book.addClient(new ClientBuilder().withPhone("81112222").withEmail("alice@Example.COM").build());
         book.addClient(new ClientBuilder().withPhone("82223333").withEmail("Bob@EXAMPLE.com").build());

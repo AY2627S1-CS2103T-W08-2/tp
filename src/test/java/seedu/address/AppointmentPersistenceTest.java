@@ -105,6 +105,7 @@ public class AppointmentPersistenceTest {
     //@@author anderschow
     @Test
     public void editClient_refreshesListedBookingAndPersistsWithoutChangingHistory() throws Exception {
+        // EP: Linked future bookings, historical bookings, and unrelated bookings after an owner edit.
         Appointment historical = historicalBook().getAppointmentList().getFirst();
         model.setAppointments(List.of(historical));
         logic.execute(COMMAND);
@@ -135,6 +136,7 @@ public class AppointmentPersistenceTest {
 
     @Test
     public void editClient_phoneThenAddressChange_keepsFutureBookingLinkedAndHistoryRecorded() throws Exception {
+        // EP: Linked future and historical bookings after successive phone and address edits.
         Appointment historical = historicalBook().getAppointmentList().getFirst();
         model.setAppointments(List.of(historical));
         logic.execute(COMMAND);

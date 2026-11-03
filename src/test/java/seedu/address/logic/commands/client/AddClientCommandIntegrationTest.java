@@ -48,6 +48,7 @@ public class AddClientCommandIntegrationTest {
     //@@author anderschow
     @Test
     public void execute_sharedNameAndAddress_success() {
+        // EP: Shared name and address with distinct phone and email: a valid new client.
         Client existing = model.getBubuBook().getClientList().get(0);
         Client client = new ClientBuilder(existing).withPhone("81234567")
                 .withEmail("another@example.com").build();
@@ -59,6 +60,7 @@ public class AddClientCommandIntegrationTest {
 
     @Test
     public void execute_sharedPhoneOrEmailInFilteredList_failure() {
+        // EP: Phone-only and email-only conflicts with clients hidden by the active filter.
         Client existing = model.getBubuBook().getClientList().get(0);
         model.updateFilteredClientList(client -> false);
         Client samePhone = new ClientBuilder().withPhone(existing.getPhone().value).build();

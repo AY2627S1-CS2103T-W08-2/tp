@@ -63,6 +63,7 @@ public class AddClientCommandParserTest {
     //@@author anderschow
     @Test
     public void parse_repeatedNonTagValue_failure() {
+        // EP: Repeated non-tag fields with valid values, invalid-then-valid values, or valid-then-invalid values.
         String validExpectedClientString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;
 
@@ -137,6 +138,7 @@ public class AddClientCommandParserTest {
     //@@author anderschow
     @Test
     public void parse_compulsoryFieldMissing_failure() {
+        // EP: One required prefix missing or all required prefixes missing.
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddClientCommand.MESSAGE_USAGE);
 
         // missing name prefix
@@ -164,6 +166,7 @@ public class AddClientCommandParserTest {
     //@@author anderschow
     @Test
     public void parse_emptyRequiredFields_failure() {
+        // EP: Empty command arguments versus an explicitly blank value for each required field.
         assertParseFailure(parser, "", "Name (n/) is required. Example: n/Alice Tan.");
         assertParseFailure(parser, " n/ " + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
                 "Name (n/) cannot be blank.");
